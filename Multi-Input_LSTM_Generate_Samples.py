@@ -1,15 +1,65 @@
+import os
+import csv
 import pandas
 import pickle
 from sklearn import preprocessing
 
-data = pandas.read_csv('c:/data/datasets/stocks/aki_subset/stocks.csv')
+data_folder_path = "c:/data/USWS_Subset"
 
-time = min(data.Date)
-end = max(data.Date)
-#end = 253 nur zum testen
+# time = min(data.Date)
+# end = max(data.Date)
+# end = 253 nur zum testen
 
+anzahlFile = 0
 T = 20
+allChunks = []
 
+chunksPerFile = 50
+
+for root, dirs, files in os.walk(data_folder_path):
+    for file in files:
+        if file.endswith(".csv"):
+            singleStockArray = []
+            if (anzahlFile == 1):
+                exit(0)
+
+            f = open(data_folder_path + "/" + file, 'r')
+
+            #reader = csv.DictReader(f)  # read rows into a dictionary format
+            reader = pandas.read_csv(f)
+
+            allChunksSingleStock = []
+            allRowsSingleChunk = []
+            chunkSize = 22
+
+            startIndex = 0
+            should_restart = True
+            while should_restart:
+                should_restart = False
+                for index, row in reader.iterrows():
+                    if index >= startIndex:
+                        allRowsSingleChunk.append(row)
+                        if len(allRowsSingleChunk) == chunkSize:
+                            allChunksSingleStock.append(pandas.DataFrame(allRowsSingleChunk))
+                            allRowsSingleChunk.clear()
+                            print("index finished: " + str(startIndex))
+                            startIndex = startIndex + 1
+                            should_restart = True
+                            break
+
+
+                #allChunks.append(allChunksSingleStock)
+
+            #  perform calculation
+            f.close()
+            anzahlFile = anzahlFile + 1
+
+# Delete not needed columns
+# Filtering (null values raus, sich nicht verändernde Aktienkurse raus)
+# Normalisation
+# Save as pickle file
+
+"""
 # Für jeden einzelnen Zeitpunkt
 while time < end - T:
     print(time)
@@ -21,10 +71,10 @@ while time < end - T:
     # Fehlende Werte killen
     table = table.dropna(axis=1)
     # Alle Aktien die keine Variation haben (immer gleichen Wert über 20 Tage) -> rauswerfen
-    table = table.loc[:,table.nunique()!=1]
+    table = table.loc[:, table.nunique() != 1]
 
-    #normalize
-    x = table.values #returns a numpy array
+    # normalize
+    x = table.values  # returns a numpy array
     min_max_scaler = preprocessing.MinMaxScaler()
     x_scaled = min_max_scaler.fit_transform(x)
     table = pandas.DataFrame(x_scaled, columns=table.columns)
@@ -43,7 +93,7 @@ while time < end - T:
         item['y'] = targets[col]
         # Alle Y Werte als input
         item['Y'] = table[col]
-        pos_stocks = list(correlations[col].nlargest(21).index) # largest correlation is with stock itself
+        pos_stocks = list(correlations[col].nlargest(21).index)  # largest correlation is with stock itself
         pos_stocks.remove(col)
         item['X_p'] = table[pos_stocks]
         neg_stocks = list(correlations[col].nsmallest(20).index)
@@ -51,3 +101,4 @@ while time < end - T:
         with open('c:/data/htw/2021_SS/AKI/Samples/' + col + '_' + str(time) + '.pkl', 'wb') as f:
             pickle.dump(item, f, pickle.HIGHEST_PROTOCOL)
     time = time + 1
+"""
