@@ -1,0 +1,2 @@
+Vorlesung Paper Aktien Paper: http://proceedings.mlr.press/v95/li18c/li18c.pdf
+Unser Paper: https://www.researchgate.net/profile/Murtaza-Roondiwala/publication/327967988_Predicting_Stock_Prices_Using_LSTM/links/5bafbe6692851ca9ed30ceb9/Predicting-Stock-Prices-Using-LSTM.pdf
