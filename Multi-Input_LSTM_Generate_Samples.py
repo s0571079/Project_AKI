@@ -6,31 +6,23 @@ from sklearn import preprocessing
 
 data_folder_path = "c:/data/USWS_Subset"
 
-# time = min(data.Date)
-# end = max(data.Date)
-# end = 253 nur zum testen
+# Loop settings
+numberOfFilesToRead = 10
+chunksPerFileToRead = 20
+chunkSize = 22
 
-anzahlFile = 0
-T = 20
 allChunks = []
-
-chunksPerFile = 50
+numberOfFilesRead = 0
 
 for root, dirs, files in os.walk(data_folder_path):
     for file in files:
         if file.endswith(".csv"):
             singleStockArray = []
-            if (anzahlFile == 1):
-                exit(0)
-
-            f = open(data_folder_path + "/" + file, 'r')
-
-            #reader = csv.DictReader(f)  # read rows into a dictionary format
-            reader = pandas.read_csv(f)
-
             allChunksSingleStock = []
             allRowsSingleChunk = []
-            chunkSize = 22
+
+            f = open(data_folder_path + "/" + file, 'r')
+            reader = pandas.read_csv(f)
 
             startIndex = 0
             should_restart = True
@@ -42,18 +34,24 @@ for root, dirs, files in os.walk(data_folder_path):
                         if len(allRowsSingleChunk) == chunkSize:
                             allChunksSingleStock.append(pandas.DataFrame(allRowsSingleChunk))
                             allRowsSingleChunk.clear()
-                            print("index finished: " + str(startIndex))
                             startIndex = startIndex + 1
                             should_restart = True
+                            if len(allChunksSingleStock) == chunksPerFileToRead:
+                                should_restart = False
                             break
 
+            if len(allChunksSingleStock) > 1:
+                allChunks.append(list(allChunksSingleStock))
+                numberOfFilesRead = numberOfFilesRead + 1
+                print("Files read:" + str(numberOfFilesRead))
+            else:
+                print("File hat nicht genügend Einträge (Chunksize)" + file)
+            if numberOfFilesToRead == numberOfFilesRead:
+                break
 
-                #allChunks.append(allChunksSingleStock)
+        f.close()
 
-            #  perform calculation
-            f.close()
-            anzahlFile = anzahlFile + 1
-
+print("Lesen abgeschlossen")
 # Delete not needed columns
 # Filtering (null values raus, sich nicht verändernde Aktienkurse raus)
 # Normalisation
