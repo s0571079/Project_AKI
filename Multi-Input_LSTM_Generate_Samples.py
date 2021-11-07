@@ -1,24 +1,54 @@
+"""
+This file is used to generate the pickle files in the desired format to feed it to the neuronal network.
+
+Steps which happen here:
+
+READING DATA
+- Find all available CSV stock files
+- Open each csv. file
+- Read each file from the top to the bottom step by step and build chunks based on a given chunk size (we take 22 here)
+- Validate each result per file (files with less than 22 rows are ignored)
+
+VALIDATION AND PREPROCESSING
+- (missing) Delete not needed columns
+- (missing) Validation
+- (missing) Filtering (null values raus, sich nicht verändernde Aktienkurse raus)
+- (missing) Normalisation
+
+ENRICH DATA WITH TA-LIB PARAMETERS
+- (missing) Calculate different parameters from different TA-LIB classes
+- (missing) Add the results to each chunk row
+
+PERSIST VALUES
+- (missing) Save the preprocessed data as pickle files
+"""
+
 import os
-import csv
 import pandas
+import csv
 import pickle
 from sklearn import preprocessing
 
+# basic settings
 data_folder_path = "c:/data/USWS_Subset"
+pickle_files_folder_path = "missing"
 
-# Loop settings
+# loop settings
 numberOfFilesToRead = 10
 chunksPerFileToRead = 20
-chunkSize = 22
+chunkSize = 22 # size of rows in one chunk
 
-allChunks = []
-numberOfFilesRead = 0
+# init variables
+allFilesAllChunks = []
+numberOfFilesReadingFinished = 0
 
 for root, dirs, files in os.walk(data_folder_path):
+
+    print("Found stock files to read:" + str(len(files)))
+
     for file in files:
         if file.endswith(".csv"):
-            singleStockArray = []
-            allChunksSingleStock = []
+            allChunksInFile = []
             allRowsSingleChunk = []
 
             f = open(data_folder_path + "/" + file, 'r')
@@ -32,27 +62,43 @@ for root, dirs, files in os.walk(data_folder_path):
                     if index >= startIndex:
                         allRowsSingleChunk.append(row)
                         if len(allRowsSingleChunk) == chunkSize:
-                            allChunksSingleStock.append(pandas.DataFrame(allRowsSingleChunk))
+                            dataFrame = pandas.DataFrame(allRowsSingleChunk)
+                            dataFrame.drop('Volume', axis=1, inplace=True)
+                            allChunksInFile.append(pandas.DataFrame(dataFrame))
                             allRowsSingleChunk.clear()
                             startIndex = startIndex + 1
                             should_restart = True
-                            if len(allChunksSingleStock) == chunksPerFileToRead:
+                            if len(allChunksInFile) == chunksPerFileToRead:
                                 should_restart = False
                             break
 
-            if len(allChunksSingleStock) > 1:
-                allChunks.append(list(allChunksSingleStock))
-                numberOfFilesRead = numberOfFilesRead + 1
-                print("Files read:" + str(numberOfFilesRead))
+            # here we make sure, the data is only added if the file had enough rows (>= chunkSize)
+            if len(allChunksInFile) > 1:
+                allFilesAllChunks.append(list(allChunksInFile))
+                numberOfFilesReadingFinished = numberOfFilesReadingFinished + 1
+                print("Files read:" + str(numberOfFilesReadingFinished))
             else:
                 print("File hat nicht genügend Einträge (Chunksize)" + file)
-            if numberOfFilesToRead == numberOfFilesRead:
+            if numberOfFilesToRead == numberOfFilesReadingFinished:
                 break
 
         f.close()
 
-print("Lesen abgeschlossen")
-# Delete not needed columns
+print("Lesen abgeschlossen: " + str(numberOfFilesReadingFinished) + " wurden erfolgreich eingelesen")
+
+# Filter out null values and ignore these chunks
+allFilesAllChunks_validated1 = []
+for allChunksSingleFile in allFilesAllChunks:
+    allChunksSingleFileValidated = []
+    for chunkDf in allChunksSingleFile:
+        chunkDf.dropna(inplace=True)
+        if len(chunkDf) == chunkSize:
+            allChunksSingleFileValidated.append(pandas.DataFrame(chunkDf))
+        else:
+            print("NULL-Validation not passed!")
+    allFilesAllChunks_validated1.append(list(allChunksSingleFileValidated))
+
+print("abc")
 # Filtering (null values raus, sich nicht verändernde Aktienkurse raus)
 # Normalisation
 # Save as pickle file
