@@ -10,13 +10,13 @@ READING DATA
 - Validate each result per file (files with less than 22 rows are ignored)
 
 VALIDATION AND PREPROCESSING
-- (missing) Delete not needed columns
-- (missing) Validation
-- (missing) Filtering (null values raus, sich nicht verändernde Aktienkurse raus)
-- (missing) Normalisation
+- Delete not needed columns
+- Filtering some conditions (filter out null values, filter out chunks with no variation)
+- Validation
+- Normalisation
 
 ENRICH DATA WITH TA-LIB PARAMETERS
-- (missing) Calculate different parameters from different TA-LIB classes
+- (started) Calculate different parameters from different TA-LIB classes (https://github.com/mrjbq7/ta-lib)
 - (missing) Add the results to each chunk row
 
 PERSIST VALUES
@@ -25,6 +25,8 @@ PERSIST VALUES
 
 import os
 import pandas
+import numpy
+import talib
 import csv
 import pickle
 from sklearn import preprocessing
@@ -84,23 +86,43 @@ for root, dirs, files in os.walk(data_folder_path):
 
         f.close()
 
-print("Lesen abgeschlossen: " + str(numberOfFilesReadingFinished) + " wurden erfolgreich eingelesen")
+print("READING DATA finished ..." + str(numberOfFilesReadingFinished) + " files are read successfully")
 
 # Filter out null values and ignore these chunks
+# Filter out values with no variation
+# Perform normalization
 allFilesAllChunks_validated1 = []
 for allChunksSingleFile in allFilesAllChunks:
     allChunksSingleFileValidated = []
     for chunkDf in allChunksSingleFile:
+        # Filtering several conditions happens here
         chunkDf.dropna(inplace=True)
-        if len(chunkDf) == chunkSize:
-            allChunksSingleFileValidated.append(pandas.DataFrame(chunkDf))
+        numberOfDifferentValuesSeries = chunkDf.nunique()
+        countDiffValuesOpen = numberOfDifferentValuesSeries['Open']
+        countDiffValuesClose = numberOfDifferentValuesSeries['Close']
+        if (len(chunkDf) == chunkSize) and (countDiffValuesOpen != 1) and (countDiffValuesClose != 1):
+            # validation passed
+            # perform normalization of columns
+            min_max_scale = preprocessing.MinMaxScaler()
+            # we need to remove the non semantic columns first (date & name)
+            chunkDfAsArray = chunkDf.values[:, 1:-1]
+            normalizedDf = min_max_scale.fit_transform(chunkDfAsArray)
+            # add the non semantic columns again
+            chunkDfPrepared = pandas.DataFrame(normalizedDf, columns=chunkDf.columns[1:-1])
+            chunkDfPrepared['Date'] = chunkDf['Date'].values
+            chunkDfPrepared['Ticker'] = chunkDf['Ticker'].values
+            allChunksSingleFileValidated.append(pandas.DataFrame(chunkDfPrepared))
         else:
-            print("NULL-Validation not passed!")
+            print("NULL-Validation or UNIQUE-Validation not passed! Values: " + str(len(chunkDf)) + " / " + str(countDiffValuesOpen) + " / " + str(countDiffValuesClose))
     allFilesAllChunks_validated1.append(list(allChunksSingleFileValidated))
 
-print("abc")
-# Filtering (null values raus, sich nicht verändernde Aktienkurse raus)
-# Normalisation
+print("VALIDATION AND PREPROCESSING finished ...")
+
+# Calculate different parameters from different TA-LIB classes
+close = numpy.random.random(100)
+output = talib.SMA(close)
+print(output)
+
 # Save as pickle file
 
 """
