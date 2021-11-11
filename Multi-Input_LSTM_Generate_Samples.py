@@ -21,6 +21,11 @@ ENRICH DATA WITH TA-LIB PARAMETERS
 
 PERSIST VALUES
 - (missing) Save the preprocessed data as pickle files
+
+
+???
+- Volume deleted
+
 """
 
 import os
@@ -65,7 +70,7 @@ for root, dirs, files in os.walk(data_folder_path):
                         allRowsSingleChunk.append(row)
                         if len(allRowsSingleChunk) == chunkSize:
                             dataFrame = pandas.DataFrame(allRowsSingleChunk)
-                            dataFrame.drop('Volume', axis=1, inplace=True)
+                            #dataFrame.drop('Volume', axis=1, inplace=True)
                             allChunksInFile.append(pandas.DataFrame(dataFrame))
                             allRowsSingleChunk.clear()
                             startIndex = startIndex + 1
@@ -119,10 +124,27 @@ for allChunksSingleFile in allFilesAllChunks:
 print("VALIDATION AND PREPROCESSING finished ...")
 
 # Calculate different parameters from different TA-LIB classes
-close = numpy.random.random(100)
-output = talib.SMA(close)
-print(output)
+for allChunksSingleFile in allFilesAllChunks_validated1:
+    for chunkDf in allChunksSingleFile:
+        for index, row in chunkDf.iterrows():
+            # CLASS_1 : 'Overlap Studies'
+            # upper, middle, lower = talib.BBANDS(close, matype=MA_Type.T3)
 
+            # CLASS_2 : 'Overlap Studies'
+
+            # CLASS_3 : 'Momentum Indicators'
+
+            # CLASS_4 : 'Volume Indicators'
+
+            # CLASS_5 : 'Cycle Indicators'
+
+            # CLASS_6 : 'Price Transform'
+
+            # CLASS_7 : 'Volatility Indicators
+
+            # CLASS_8 : 'Pattern Recognition'
+
+            # CLASS_9 : 'Statistic Functions'
 
 # Save as pickle file
 

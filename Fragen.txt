@@ -7,3 +7,9 @@
 - LSTM auf LSTM -> Deswegen im ersten Sequenz weitergeben? Ende der forward Methode?
 
 - Zusammenhang -> Netzwerk - Architektur-Zeichnung und LSTM TaLib-Klassen Input <-> Wiedersprüchlich?
+
+- TaLib Funktionen erwarten -> Sequenz -> Pro Chunk der Größe t also nur ein Wert berechnen je Talib Klasse?
+-> Sieht Datenstruktur dann so aus?:
+[ [Liste 22x5 (Open,Close,Volume], [BBANDS], [SMA], [MOM] ... ]
+bzw. auf Zeichnung
+[ [Y], [BBANDS], [SMA], [MOM] ... ]
