@@ -2,12 +2,20 @@ import torch
 import torch.nn as nn
 import math
 
-
+"""
+Sequenziell -> Inputs zu mehreren Zeitpunkten;
+Vermeidet Problem (<-> RNN) - vanishing gradients (Umso weiter entfernt von Zeitpunkt t umso weniger Einfluss)
+"Long Short Term Memory"
+Gates als Konzept: Welche Inputs sind wichtig und welche können 'vergessen' werden
+"""
 class MultiInputLSTM(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
         self.input_size = input_sz
         self.hidden_size = hidden_sz
+
+        # Definition -> Welche Gewichte und Biases haben wir
+        # Diese benötigen wir später im foward
 
         # i_t
         self.W_i = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
@@ -56,6 +64,7 @@ class MultiInputLSTM(nn.Module):
         self.init_weights()
 
     def init_weights(self):
+        # Initialisierung der Gewichte
         stdv = 1.0 / math.sqrt(self.hidden_size)
         for weight in self.parameters():
             weight.data.uniform_(-stdv, stdv)
@@ -67,19 +76,26 @@ class MultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.b_c_n)
 
     def forward(self, Y, P, N):
+        # Hier als Parameter die Ta-Lib-Klassenvektoren einfügen
 
         bs, seq_sz, _ = Y.size()
         hidden_seq = []
+        # init hidden State mit 0: 'leerer' Zustand, da kein State vorhanden im ersten Zeitpunkt
+        # C_T auch initialisiert = Carrystate für die 'Langzeitbeobachtung'
         h_t, c_t = (
             torch.zeros(bs, self.hidden_size).to(Y.device),
             torch.zeros(bs, self.hidden_size).to(Y.device),
         )
 
+        # Nach und nach durch die Sequenz (seq_sz müsste t sein -> also 22?)
+        # Im Update-Step berechnen wir die States für jede einzelne Zeiteinheit (mit den gleichen Gewichten [=LSTM])
         for t in range(seq_sz):
+            # Open/Close/Volume ... jeweils zu den verschiedenen (22) Zeitpunkten
             Y_t = Y[:, t, :]
             P_t = P[:, t, :]
             N_t = N[:, t, :]
 
+            # -> Nächster Hidden State der Sequenz wird berechnet (mithilfe der Inputs und Gewichte)
             i_t = torch.sigmoid(Y_t @ self.W_i + h_t @ self.U_i + self.b_i)
             i_p_t = torch.sigmoid(P_t @ self.W_i_p + h_t @ self.U_i_p + self.b_i_p)
             i_n_t = torch.sigmoid(N_t @ self.W_i_n + h_t @ self.U_i_n + self.b_i_n)
@@ -106,10 +122,14 @@ class MultiInputLSTM(nn.Module):
             c_t = f_t * c_t + L_t
             h_t = o_t * torch.tanh(c_t)
 
+            # In Sequenz packen, damit wir die später noch haben -> um die zum nächsten Layer weiterzugeben
+            # Unsqueeze -> Shape wird verändert
             hidden_seq.append(h_t.unsqueeze(0))
 
+        # Auch Veränderung shapes -> um später für Hidden Sequenz richtigen Shape zu haben
         hidden_seq = torch.cat(hidden_seq, dim=0)
         hidden_seq = hidden_seq.transpose(0, 1).contiguous()
+        # Output und die Sequenz (ggf. für nächsten Layer) zurückgeben; Bei nächstem Layer Linear würde h_t reichen
         return h_t, hidden_seq
 
 

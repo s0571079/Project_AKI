@@ -88,6 +88,7 @@ T = 20
 batch_size = 512
 q = 64
 
+# Read the pickle files here
 dataset = CustomDataset()
 loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
@@ -100,9 +101,10 @@ for epoch in range(10):
 
     running_loss = 0
 
+    # Loop through every record
     for Y, labels, X_p, X_n in loader:
         optimizer.zero_grad()
-        # Input ins Netzwerk
+        # Input ins Netzwerk -> Hier Anzahl Parameterin Netzwerk = Open,Close,Volume + Anzahl Talib?
         outputs = net(Y.float(), X_p.float(), X_n.float())
         # Vergleich mit labels
         loss = criterion(torch.squeeze(outputs), labels.float())

@@ -1,0 +1,9 @@
+- Wieviele Daten insgesamt genau nehmen? Hälfte?
+
+- Wie viele Talibs pro Klasse?
+
+- Frage in Multi-Input_LSTM Zeile 107?
+
+- LSTM auf LSTM -> Deswegen im ersten Sequenz weitergeben? Ende der forward Methode?
+
+- Zusammenhang -> Netzwerk - Architektur-Zeichnung und LSTM TaLib-Klassen Input <-> Wiedersprüchlich?
