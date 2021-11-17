@@ -34,6 +34,7 @@ import numpy
 import talib
 import csv
 import pickle
+import TaLib_Calculations
 from sklearn import preprocessing
 
 # basic settings
@@ -123,12 +124,19 @@ for allChunksSingleFile in allFilesAllChunks:
 
 print("VALIDATION AND PREPROCESSING finished ...")
 
+upperBB = []
+middleBB = []
+lowerBB = []
 # Calculate different parameters from different TA-LIB classes
 for allChunksSingleFile in allFilesAllChunks_validated1:
     for chunkDf in allChunksSingleFile:
-        for index, row in chunkDf.iterrows():
+        #Bollinger Bands Calculation
+        upper, middle, lower = TaLib_Calculations.getBBands(chunkDf)
+        upperBB.append(upper)
+        middleBB.append(middle)
+        lowerBB.append(lower)
+        #for index, row in chunkDf.iterrows():
             # CLASS_1 : 'Overlap Studies'
-            # upper, middle, lower = talib.BBANDS(close, matype=MA_Type.T3)
 
             # CLASS_2 : 'Overlap Studies'
 
@@ -147,7 +155,6 @@ for allChunksSingleFile in allFilesAllChunks_validated1:
             # CLASS_9 : 'Statistic Functions'
 
 # Save as pickle file
-
 """
 # Für jeden einzelnen Zeitpunkt
 while time < end - T:
