@@ -7,9 +7,9 @@ from os import listdir
 import random
 import pickle
 import custom_lstm as lstm
-import multi_input_lstm_layers as milstm
+import MultiInput_LSTM as milstm
 
-# = Grobgerüst Bild (mit den 6 inputs links) -> y +1 output
+# = Grobgerüst Gesamtmodell (mit den 6 inputs links) -> y +1 output
 class Net(nn.Module):
 
     def __init__(self, seq_size, hidden_size):
@@ -17,6 +17,9 @@ class Net(nn.Module):
         self.seq_size = seq_size
         # Das ist das ganz links oben für y Input
         self.Y_layer = lstm.CustomLSTM(1, hidden_size)
+
+        # Definition der 2 LSTM Layer + Relu + Linear
+
         # Modulelist = Liste an P layers
         self.X_p_layers = nn.ModuleList()
         self.X_n_layers = nn.ModuleList()
@@ -31,10 +34,15 @@ class Net(nn.Module):
 
         self.lin_layer = nn.Linear(hidden_size, 1)
 
-    def forward(self, Y, X_n, X_p): # wird ausgeführt sobald input reinkommt
+    def forward(self, Y, X_n, X_p): # wird ausgeführt sobald input reinkommt; (Input aus net Methode glaube ich) -> also hier anpassen
+        # Logik Gesamtnetzwerkarchitektur
         # Y wird durch den y layer durchcgeführt (links oben in Bild)
         # Y_tilde_hidden = gesamte Sequenz die nach oben gegeben wird; wenn nächster Layer Feed Forward wäre, dann bräuchten wir nur Y_tilde
         # Sequenzielle Netzwerke brauchen als output immer eine Sequenz
+
+        # Hier wird zunächst der Input ins erste Multi-Input LSTM gegeben
+        # Danach dessen Input (Sequence) wird Input für das nächste Custom LSTM
+
         Y_tilde, Y_tilde_hidden = self.Y_layer(Y.unsqueeze(2))
 
         X_p_list = list()
@@ -67,14 +75,14 @@ class CustomDataset(Dataset):
 
     def __init__(self):
         # make a list containing the path to all your pkl files
-        self.paths = listdir('c:/data/htw/2021_SS/AKI/Samples/')
+        self.paths = listdir('c:/data/htw/KI_Project/Samples/')
         random.shuffle(self.paths)
 
     def __len__(self):
         return len(self.paths)
 
     def __getitem__(self, idx):
-        with open('c:/data/htw/2021_SS/AKI/Samples/' + self.paths[idx], 'rb') as f:
+        with open('c:/data/htw/2KI_Project/Samples/' + self.paths[idx], 'rb') as f:
             item = pickle.load(f)
         # Für jede einzelne Aktie, jeden einzelnen Zeitpunkt werden die Daten hier ausgelesen
         Y = item['Y'].to_numpy()
@@ -104,7 +112,8 @@ for epoch in range(10):
     # Loop through every record
     for Y, labels, X_p, X_n in loader:
         optimizer.zero_grad()
-        # Input ins Netzwerk -> Hier Anzahl Parameterin Netzwerk = Open,Close,Volume + Anzahl Talib?
+        # Input ins Netzwerk -> Hier Anzahl Parameterin Netzwerk = (Liste 22x(5+10) (Open,Close,Volume...) ) + (TalibWert_1) + (TalibWert_2) ...?
+        # Anzahl Parameter?
         outputs = net(Y.float(), X_p.float(), X_n.float())
         # Vergleich mit labels
         loss = criterion(torch.squeeze(outputs), labels.float())

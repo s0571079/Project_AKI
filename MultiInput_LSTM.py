@@ -75,7 +75,7 @@ class MultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.U_c_n)
         torch.nn.init.zeros_(self.b_c_n)
 
-    def forward(self, Y, P, N):
+    def forward(self, Y, P, N): # 10 (Talib Classes) +1(22x5) input
         # Hier als Parameter die Ta-Lib-Klassenvektoren einfügen
 
         bs, seq_sz, _ = Y.size()

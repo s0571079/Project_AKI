@@ -1,15 +1,36 @@
 - Wieviele Daten insgesamt genau nehmen? Hälfte?
 
-- Wie viele Talibs pro Klasse?
+- Wie viele Talibs pro Klasse? https://github.com/mrjbq7/ta-lib
 
-- Frage in Multi-Input_LSTM Zeile 107?
+- TaLib auch normalisieren?
 
-- LSTM auf LSTM -> Deswegen im ersten Sequenz weitergeben? Ende der forward Methode?
-
-- Zusammenhang -> Netzwerk - Architektur-Zeichnung und LSTM TaLib-Klassen Input <-> Wiedersprüchlich?
+- Sind die beiden LSTMs unterschiedlich?
 
 - TaLib Funktionen erwarten -> Sequenz -> Pro Chunk der Größe t also nur ein Wert berechnen je Talib Klasse?
 -> Sieht Datenstruktur dann so aus?:
-[ [Liste 22x5 (Open,Close,Volume], [BBANDS], [SMA], [MOM] ... ]
+[ [Liste 22x5 (Open,Close,Volume, Min, Max], [BBANDS], [SMA], [MOM] ... ]
 bzw. auf Zeichnung
 [ [Y], [BBANDS], [SMA], [MOM] ... ]
+-> - Frage Generate_Samples Zeile 133
+
+- Frage in Multi-Input_LSTM Zeile 107?
+
+- Next steps
+
+_________________________________________
+
+- Soviele Daten nehmen wie geht
+
+- Einfach festlegen die Anzahl Talibs pro Klasse (nicht so wichtig)
+
+- Ja Talib auch normalisieren
+
+- Ja, zwei unterschiedliche LSTMs -> erste ist ein MultiInput LSTM mit Inputs: (22x5), (Talib-Klasse1), (Talib-Klasse2) .. (Talib-Klasse10) [bei 10 Klassen]
+
+- Input sieht so aus [ [Liste 22x5 (Open,Close,Volume, Min, Max], (Talib-Klasse1), (Talib-Klasse2) ... ]
+
+- Es gibt ein Talib-Wert für jeden einzelnen Tag (das wird berechnet z.B. 14 Tage in die Vergangenheit) -> deswegen muss man bei Generate_Samples nochmal zurückrechnen (erster Wert aus dem Input-Array errechnet sich aus den letzten 14 Tagen der Vergangenheit)
+
+- Hidden Sequence Output aus erstem Multi Input LSTM wird Input vom zweiten Custom LSTM
+
+- Entire Model Z113: Hier InitalInput [Liste 22x5 (Open,Close,Volume, Min, Max], (Talib-Klasse1), (Talib-Klasse2)]-> bei 10 Talib Classes hätte ich hier 11 Parameter
