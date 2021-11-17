@@ -18,7 +18,7 @@ class Net(nn.Module):
         # Das ist das ganz links oben für y Input
         self.Y_layer = lstm.CustomLSTM(1, hidden_size)
 
-        # Definition der 2 LSTM Layer + Relu + Linear
+        # Definition der 2 LSTM Layer (MultiInput, Custom) + Relu + Linear
 
         # Modulelist = Liste an P layers
         self.X_p_layers = nn.ModuleList()
