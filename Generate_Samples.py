@@ -124,38 +124,52 @@ for allChunksSingleFile in allFilesAllChunks:
 
 print("VALIDATION AND PREPROCESSING finished ...")
 
+#init lists
 upperBB = []
 middleBB = []
 lowerBB = []
+dema = []
+mom = []
+adline = []
+atr = []
+avgprice = []
+#htdcperiod = []
+#htdcphase = []
+whitesoldiers = []
+starsinsouth = []
+twocrows = []
+linearreg = []
+
 # Calculate different parameters from different TA-LIB classes
 for allChunksSingleFile in allFilesAllChunks_validated1:
     for chunkDf in allChunksSingleFile:
-        #Bollinger Bands Calculation
+        # CLASS_1 : 'Overlap Studies' - Bollinger Bands (with Simple Moving Average)
         upper, middle, lower = TaLib_Calculations.getBBands(chunkDf)
-        upperBB.append(upper)
-        middleBB.append(middle)
-        lowerBB.append(lower)
-        #for index, row in chunkDf.iterrows():
-            # CLASS_1 : 'Overlap Studies'
-
-            # CLASS_2 : 'Overlap Studies'
-
-            # CLASS_3 : 'Momentum Indicators'
-
-            # CLASS_4 : 'Volume Indicators'
-
-            # CLASS_5 : 'Cycle Indicators'
-
-            # CLASS_6 : 'Price Transform'
-
-            # CLASS_7 : 'Volatility Indicators
-
-            # CLASS_8 : 'Pattern Recognition'
-
-            # CLASS_9 : 'Statistic Functions'
+        upperBB.append(upper[21])
+        middleBB.append(middle[21])
+        lowerBB.append(lower[21])
+        # CLASS_2 : 'Overlap Studies' - Double Exponential Moving Average
+        demas = TaLib_Calculations.getDEMA(chunkDf)
+        dema.append(demas[~numpy.isnan(demas)])
+        # CLASS_3 : 'Momentum Indicators' - Momentum
+        mom.append(TaLib_Calculations.getMomentum(chunkDf)[21])
+        # CLASS_4 : 'Volume Indicators' - Chaikin Accumulation/Distribution Line
+        adline.append(TaLib_Calculations.getADLine(chunkDf))
+        # CLASS_5 : 'Cycle Indicators' - Hilbert Transform - Dominant Cycle Period and Dominant Cycle Phase (DO NOT WORK)
+        #htdcperiod.append(TaLib_Calculations.getHTDCPeriod(chunkDf))
+        #htdcphase.append(TaLib_Calculations.getHTDCPhase(chunkDf))
+        # CLASS_6 : 'Price Transform' - Average Price
+        avgprice.append(TaLib_Calculations.getAvgPrice(chunkDf))
+        # CLASS_7 : 'Volatility Indicators
+        atr.append(TaLib_Calculations.getAverageTrueRange(chunkDf)[21])
+        # CLASS_8 : 'Pattern Recognition'
+        whitesoldiers.append(TaLib_Calculations.get3AWS(chunkDf))
+        starsinsouth.append(TaLib_Calculations.get3SITS(chunkDf))
+        twocrows.append(TaLib_Calculations.get2Crows(chunkDf))
+        # CLASS_9 : 'Statistic Functions' - Linear Regression
+        linearreg.append(TaLib_Calculations.getLinearReg(chunkDf)[21])
 
 # Save as pickle file
-
 """
     # Wir gehen jetzt durch die Spalten
     for col in correlations.columns:
