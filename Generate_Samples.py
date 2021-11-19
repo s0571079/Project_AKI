@@ -132,15 +132,24 @@ dema = []
 wma = []
 mom = []
 mfi = []
+bop = []
 adline = []
+adosc = []
+obv = []
 atr = []
+natr = []
+tr = []
 avgprice = []
+typprice = []
+wclprice = []
 #htdcperiod = []
 #htdcphase = []
 whitesoldiers = []
 starsinsouth = []
 twocrows = []
 linearreg = []
+stddev = []
+tsf = []
 
 # Calculate different parameters from different TA-LIB classes
 for allChunksSingleFile in allFilesAllChunks_validated1:
@@ -153,35 +162,35 @@ for allChunksSingleFile in allFilesAllChunks_validated1:
         #CLASS_1 : 'Overlap Studies' - Double Exponential Moving Average
         demas = TaLib_Calculations.getDEMA(chunkDf)
         dema.append(demas[~numpy.isnan(demas)])
-        #CLASS_1 : 'Overlap Studies' -
+        #CLASS_1 : 'Overlap Studies' - Weighted Moving Average
         wma.append(TaLib_Calculations.getWMA(chunkDf)[21])
         # CLASS_2 : 'Momentum Indicators' - Momentum
         mom.append(TaLib_Calculations.getMomentum(chunkDf)[21])
         # CLASS_2 : 'Momentum Indicators' - Money Flow Index
         mfi.append(TaLib_Calculations.getMFI(chunkDf)[21])
-        # CLASS_2 : 'Momentum Indicators' -
-
+        # CLASS_2 : 'Momentum Indicators' - Balance of Power
+        bop.append(TaLib_Calculations.getBOP(chunkDf))
         # CLASS_3 : 'Volume Indicators' - Chaikin Accumulation/Distribution Line
         adline.append(TaLib_Calculations.getADLine(chunkDf))
-        # CLASS_3 : 'Volume Indicators' -
-
-        # CLASS_3 : 'Volume Indicators' -
-
+        # CLASS_3 : 'Volume Indicators' - Chaikin A/D Oscillator
+        adosc.append(TaLib_Calculations.getADOscillator(chunkDf)[21])
+        # CLASS_3 : 'Volume Indicators' - On Balance Volume
+        obv.append(TaLib_Calculations.getOBV(chunkDf))
         # CLASS_4 : 'Cycle Indicators' - Hilbert Transform - Dominant Cycle Period and Dominant Cycle Phase (DO NOT WORK)
         #htdcperiod.append(TaLib_Calculations.getHTDCPeriod(chunkDf))
         #htdcphase.append(TaLib_Calculations.getHTDCPhase(chunkDf))
         # CLASS_5 : 'Price Transform' - Average Price
         avgprice.append(TaLib_Calculations.getAvgPrice(chunkDf))
-        # CLASS_5 : 'Price Transform' -
-
-        # CLASS_5 : 'Price Transform' -
-
+        # CLASS_5 : 'Price Transform' - Typical Price
+        typprice.append(TaLib_Calculations.getTypicalPrice(chunkDf))
+        # CLASS_5 : 'Price Transform' - Weighted Close Price
+        wclprice.append(TaLib_Calculations.getWClPrice(chunkDf))
         # CLASS_6 : 'Volatility Indicators - Average True Range
         atr.append(TaLib_Calculations.getAverageTrueRange(chunkDf)[21])
-        # CLASS_6 : 'Volatility Indicators -
-
-        # CLASS_6 : 'Volatility Indicators -
-
+        # CLASS_6 : 'Volatility Indicators - Normalized Average True Range
+        natr.append(TaLib_Calculations.getNATR(chunkDf)[21])
+        # CLASS_6 : 'Volatility Indicators - True Range (NaN an erster Stelle rausfilern?)
+        tr.append(TaLib_Calculations.getTrueRange(chunkDf))
         # CLASS_7 : 'Pattern Recognition' - Three Advanced White Soldiers
         whitesoldiers.append(TaLib_Calculations.get3AWS(chunkDf))
         # CLASS_7 : 'Pattern Recognition' - Three Stars in the South
@@ -190,10 +199,11 @@ for allChunksSingleFile in allFilesAllChunks_validated1:
         twocrows.append(TaLib_Calculations.get2Crows(chunkDf))
         # CLASS_8 : 'Statistic Functions' - Linear Regression
         linearreg.append(TaLib_Calculations.getLinearReg(chunkDf)[21])
-        # CLASS_8 : 'Statistic Functions' -
-
-        # CLASS_8 : 'Statistic Functions' -
-print(wma)
+        # CLASS_8 : 'Statistic Functions' - Standard Deviation
+        stddev.append(TaLib_Calculations.getStdDev(chunkDf)[21])
+        # CLASS_8 : 'Statistic Functions' - Time Series Forecast
+        tsf.append(TaLib_Calculations.getTSF(chunkDf)[21])
+print("TALIB CALCULATIONS finished ...")
 # Save as pickle file
 """
     # Wir gehen jetzt durch die Spalten

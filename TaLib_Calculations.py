@@ -247,3 +247,164 @@ def getWMA(df):
         return None
 
     return wma
+
+#Balance of Power
+def getBOP(df):
+    try:
+        open = df['Open']
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        bop = talib.BOP(open.values,
+                        high.values,
+                        low.values,
+                        close.values)
+    except Exception as ex:
+        return None
+
+    return bop
+
+#Chaikin A/D Oscillator
+def getADOscillator(df):
+    try:
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+        volume = df['Volume']
+    except Exception as ex:
+        return None
+
+    try:
+        adosc = talib.ADOSC(high.values,
+                            low.values,
+                            close.values,
+                            volume.values,
+                            fastperiod=3,
+                            slowperiod=len(close))
+    except Exception as ex:
+        return None
+
+    return adosc
+
+#On Balance Volume
+def getOBV(df):
+    try:
+        close = df['Close']
+        volume = df['Volume']
+    except Exception as ex:
+        return None
+
+    try:
+        obv = talib.OBV(close.values,
+                        volume.values)
+    except Exception as ex:
+        return None
+
+    return obv
+
+#Typical Price
+def getTypicalPrice(df):
+    try:
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        typprice = talib.TYPPRICE(high.values,
+                                  low.values,
+                                  close.values)
+    except Exception as ex:
+        return None
+
+    return typprice
+
+#Weighted Close Price
+def getWClPrice(df):
+    try:
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        wclprice = talib.WCLPRICE(high.values,
+                                 low.values,
+                                 close.values)
+    except Exception as ex:
+        return None
+
+    return wclprice
+
+#Normalized Average True Range
+def getNATR(df):
+    try:
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        natr = talib.ATR(high.values,
+                        low.values,
+                        close.values,
+                        timeperiod=len(close)-1)
+    except Exception as ex:
+        return None
+
+    return natr
+
+#True Range
+def getTrueRange(df):
+    try:
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        tr = talib.TRANGE(high.values,
+                          low.values,
+                          close.values)
+    except Exception as ex:
+        return None
+
+    return tr
+
+#Standard Deviation
+def getStdDev(df):
+    try:
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        stddev = talib.STDDEV(close.values,
+                              timeperiod=len(close))
+    except Exception as ex:
+        return None
+
+    return stddev
+
+#Time Series Forecast
+def getTSF(df):
+    try:
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        tsf = talib.TSF(close.values,
+                        timeperiod=len(close))
+    except Exception as ex:
+        return None
+
+    return tsf
