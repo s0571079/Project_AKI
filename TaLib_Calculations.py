@@ -211,3 +211,39 @@ def getLinearReg(df):
         return None
 
     return linearreg
+
+#Money Flow Index
+def getMFI(df):
+    try:
+        high = df['High']
+        low = df['Low']
+        close = df['Close']
+        volume = df['Volume']
+    except Exception as ex:
+        return None
+
+    try:
+        mfi = talib.MFI(high.values,
+                        low.values,
+                        close.values,
+                        volume.values,
+                        timeperiod=len(close)-1)
+    except Exception as ex:
+        return None
+
+    return mfi
+
+#Weighted Moving Average
+def getWMA(df):
+    try:
+        close = df['Close']
+    except Exception as ex:
+        return None
+
+    try:
+        wma = talib.WMA(close.values,
+                        timeperiod=len(close))
+    except Exception as ex:
+        return None
+
+    return wma
