@@ -6,8 +6,7 @@ import torch.optim as optim
 from os import listdir
 import random
 import pickle
-import custom_lstm as lstm
-import MultiInput_LSTM as milstm
+import CustomMultiInput_LSTM as milstm
 
 # = Grobgerüst Gesamtmodell (mit den 6 inputs links) -> y +1 output
 class Net(nn.Module):
@@ -15,59 +14,22 @@ class Net(nn.Module):
     def __init__(self, seq_size, hidden_size):
         super(Net, self).__init__()
         self.seq_size = seq_size
-        # Das ist das ganz links oben für y Input
-        self.Y_layer = lstm.CustomLSTM(1, hidden_size)
 
-        # Definition der 2 LSTM Layer (MultiInput, Custom) + Relu + Linear
+        # ? Sequence Size?
 
-        # Modulelist = Liste an P layers
-        self.X_p_layers = nn.ModuleList()
-        self.X_n_layers = nn.ModuleList()
-        # Je nachdem wieviel Korrelationen (Firmen im Bsp waren es 15) haben -> füge ich layer hinzu
-        for i in range(self.seq_size):
-            self.X_p_layers.append(lstm.CustomLSTM(1, hidden_size))
-            self.X_n_layers.append(lstm.CustomLSTM(1, hidden_size))
-
-        # Weitere Layer, die müssen selbst gebaut werden
-        self.MI_LSTM_layer = milstm.MultiInputLSTM(hidden_size, hidden_size)
-        self.Attention_layer = milstm.Attention(hidden_size, hidden_size)
-
+        # Netzwerkarchitektur
+        self.MI_LSTM_layer = milstm.CustomMultiInput_LSTM(1, hidden_size)
+        self.Y_layer = nn.LSTM(hidden_size, hidden_size)
+        self.relu_layer = nn.ReLU()
         self.lin_layer = nn.Linear(hidden_size, 1)
 
-    def forward(self, Y, X_n, X_p): # wird ausgeführt sobald input reinkommt; (Input aus net Methode glaube ich) -> also hier anpassen
-        # Logik Gesamtnetzwerkarchitektur
-        # Y wird durch den y layer durchcgeführt (links oben in Bild)
-        # Y_tilde_hidden = gesamte Sequenz die nach oben gegeben wird; wenn nächster Layer Feed Forward wäre, dann bräuchten wir nur Y_tilde
-        # Sequenzielle Netzwerke brauchen als output immer eine Sequenz
+    def forward(self, y, x1, x2, x3, x4, x5, x6, x7, x8, x9): # wird ausgeführt sobald input reinkommt;
 
-        # Hier wird zunächst der Input ins erste Multi-Input LSTM gegeben
-        # Danach dessen Input (Sequence) wird Input für das nächste Custom LSTM
-
-        Y_tilde, Y_tilde_hidden = self.Y_layer(Y.unsqueeze(2))
-
-        X_p_list = list()
-        X_n_list = list()
-        # Für jede der z .B. 15 Korrelations Firmen, durch LSTM und output in Liste
-        for i in range(self.seq_size):
-            # Erste korrelierte Aktie durch den Layer
-            X_p_out, X_p_hidden = self.X_p_layers[i](X_p[:,:,i:i+1])
-            # In die Liste -> x~1p (auf Bild) in Liste
-            X_p_list.append(X_p_hidden)
-            X_n_out, X_n_hidden = self.X_n_layers[i](X_n[:,:,i:i+1])
-            X_n_list.append(X_n_hidden)
-
-        # Stack meine Liste (baue Tensor) -> auf Tensor dann Durchschnitt anwenden
-        X_p_tensor = torch.stack(X_p_list)
-        P_tilde = torch.mean(X_p_tensor, 0)
-        X_n_tensor = torch.stack(X_n_list)
-        N_tilde = torch.mean(X_n_tensor, 0)
-
-        # Index haben wir weggelassen
-        Y_tilde_prime_out, Y_tilde_prime_hidden = self.MI_LSTM_layer(Y_tilde_hidden, P_tilde, N_tilde)
-
-        # Sequenz durch attention layer
-        y_tilde = self.Attention_layer(Y_tilde_prime_hidden)
-        output = torch.relu(self.lin_layer(y_tilde))
+        # Put the data through the layers -> CustomLSTM -> LSTM -> ReLu -> Linear
+        Y_tilde, Y_tilde_sqc_hidden = self.MI_LSTM_layer(y, x1, x2, x3, x4, x5, x6, x7, x8, x9)
+        Y_tilde = self.Y_layer(Y_tilde_sqc_hidden, Y_tilde)
+        Y_tilde = self.relu_layer(Y_tilde)
+        output = self.lin_layer(Y_tilde)
         return output
 
 

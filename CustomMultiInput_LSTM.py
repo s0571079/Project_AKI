@@ -8,7 +8,7 @@ Vermeidet Problem (<-> RNN) - vanishing gradients (Umso weiter entfernt von Zeit
 "Long Short Term Memory"
 Gates als Konzept: Welche Inputs sind wichtig und welche können 'vergessen' werden
 """
-class MultiInputLSTM(nn.Module):
+class CustomMultiInputLSTM(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
         self.input_size = input_sz
@@ -75,7 +75,7 @@ class MultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.U_c_n)
         torch.nn.init.zeros_(self.b_c_n)
 
-    def forward(self, Y, P, N): # 10 (Talib Classes) +1(22x5) input
+    def forward(self, y, x1, x2, x3, x4, x5, x6, x7, x8, x9):
         # Hier als Parameter die Ta-Lib-Klassenvektoren einfügen
 
         bs, seq_sz, _ = Y.size()
