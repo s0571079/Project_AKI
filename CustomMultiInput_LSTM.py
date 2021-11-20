@@ -75,7 +75,7 @@ class CustomMultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.U_c_n)
         torch.nn.init.zeros_(self.b_c_n)
 
-    def forward(self, y, x1, x2, x3, x4, x5, x6, x7, x8, x9):
+    def forward(self, Y, x1, x2, x3, x4, x5, x6, x7, x8):
         # Hier als Parameter die Ta-Lib-Klassenvektoren einfügen
 
         bs, seq_sz, _ = Y.size()
@@ -90,9 +90,13 @@ class CustomMultiInputLSTM(nn.Module):
         # Nach und nach durch die Sequenz (seq_sz müsste t sein -> also 22?)
         # Im Update-Step berechnen wir die States für jede einzelne Zeiteinheit (mit den gleichen Gewichten [=LSTM])
         for t in range(seq_sz):
+            # Jede TaLib Klasse bekommt separates Gate
+
             # Open/Close/Volume ... jeweils zu den verschiedenen (22) Zeitpunkten
             Y_t = Y[:, t, :]
+            # ---- p calculation here
             P_t = P[:, t, :]
+            # ------------------------
             N_t = N[:, t, :]
 
             # -> Nächster Hidden State der Sequenz wird berechnet (mithilfe der Inputs und Gewichte)
@@ -102,21 +106,26 @@ class CustomMultiInputLSTM(nn.Module):
 
             f_t = torch.sigmoid(Y_t @ self.W_f + h_t @ self.U_f + self.b_f)
 
+            # QUESTION: Ist das der Punkt in Architekur Grafik?
             C_tilde_t = torch.tanh(Y_t @ self.W_c + h_t @ self.U_c + self.b_c)
             C_p_tilde_t = torch.tanh(P_t @ self.W_c_p + h_t @ self.U_c_p + self.b_c_p)
             C_n_tilde_t = torch.tanh(N_t @ self.W_c_n + h_t @ self.U_c_n + self.b_c_n)
 
             o_t = torch.sigmoid(Y_t @ self.W_o + h_t @ self.U_o + self.b_o)
 
+            # Direkt vor Attention Layer
             l_t = C_tilde_t * i_t
             l_p_t = C_p_tilde_t * i_p_t
             l_n_t = C_n_tilde_t * i_n_t
 
+            # QUESTION: Zwischenschritt / Attention Layer?
             u_t = torch.tanh(l_t @ self.W_a * c_t + self.b_a)
             u_p_t = torch.tanh(l_p_t @ self.W_a * c_t + self.b_a)
             u_n_t = torch.tanh(l_n_t @ self.W_a * c_t + self.b_a)
 
             alpha_t = torch.softmax(torch.stack([u_t, u_p_t, u_n_t]), dim=0)
+
+            # Nach Attention Layer
             L_t = alpha_t[0, :, :] * l_t + alpha_t[1, :, :] * l_p_t + alpha_t[2, :, :] * l_n_t
 
             c_t = f_t * c_t + L_t

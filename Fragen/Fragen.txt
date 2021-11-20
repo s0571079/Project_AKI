@@ -1,21 +1,4 @@
-- Wieviele Daten insgesamt genau nehmen? Hälfte?
-
-- Wie viele Talibs pro Klasse? https://github.com/mrjbq7/ta-lib
-
-- TaLib auch normalisieren?
-
-- Sind die beiden LSTMs unterschiedlich?
-
-- TaLib Funktionen erwarten -> Sequenz -> Pro Chunk der Größe t also nur ein Wert berechnen je Talib Klasse?
--> Sieht Datenstruktur dann so aus?:
-[ [Liste 22x5 (Open,Close,Volume, Min, Max], [BBANDS], [SMA], [MOM] ... ]
-bzw. auf Zeichnung
-[ [Y], [BBANDS], [SMA], [MOM] ... ]
--> - Frage Generate_Samples Zeile 133
-
-- Frage in Multi-Input_LSTM Zeile 107?
-
-- Next steps
+- Basierend auf dem Netzwerk-Architekturdiagramm: Kann alles so bleiben, nur jede Talib einzelnes Gate?
 
 _________________________________________
 
