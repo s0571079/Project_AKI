@@ -8,29 +8,59 @@ Vermeidet Problem (<-> RNN) - vanishing gradients (Umso weiter entfernt von Zeit
 "Long Short Term Memory"
 Gates als Konzept: Welche Inputs sind wichtig und welche können 'vergessen' werden
 """
+# QUESTION Bild in Paper: Alles gleich nur separate Input Gates?
 class CustomMultiInputLSTM(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
         self.input_size = input_sz
         self.hidden_size = hidden_sz
 
-        # Definition -> Welche Gewichte und Biases haben wir
-        # Diese benötigen wir später im foward
+        # Definiton of weights and biases
 
         # i_t
         self.W_i = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
         self.U_i = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i = nn.Parameter(torch.Tensor(hidden_sz))
 
-        # i_p_t
-        self.W_i_p = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
-        self.U_i_p = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
-        self.b_i_p = nn.Parameter(torch.Tensor(hidden_sz))
+        # x1
+        self.W_i_x1 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x1 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x1 = nn.Parameter(torch.Tensor(hidden_sz))
 
-        # i_n_t
-        self.W_i_n = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
-        self.U_i_n = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
-        self.b_i_n = nn.Parameter(torch.Tensor(hidden_sz))
+        # x2
+        self.W_i_x2 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x2 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x2 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x3
+        self.W_i_x3 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x3 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x3 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x4
+        self.W_i_x4 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x4 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x4 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x5
+        self.W_i_x5 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x5 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x5 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x6
+        self.W_i_x6 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x6 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x6 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x7
+        self.W_i_x7 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x7 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x7 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x8
+        self.W_i_x8 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_i_x8 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_i_x8 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # f_t
         self.W_f = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
@@ -42,15 +72,45 @@ class CustomMultiInputLSTM(nn.Module):
         self.U_c = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c = nn.Parameter(torch.Tensor(hidden_sz))
 
-        # c_p_t
-        self.W_c_p = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
-        self.U_c_p = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
-        self.b_c_p = nn.Parameter(torch.Tensor(hidden_sz))
+        # x1
+        self.W_c_x1 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x1 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x1 = nn.Parameter(torch.Tensor(hidden_sz))
 
-        # c_n_t
-        self.W_c_n = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
-        self.U_c_n = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
-        self.b_c_n = nn.Parameter(torch.Tensor(hidden_sz))
+        # x2
+        self.W_c_x2 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x2 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x2 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x3
+        self.W_c_x3 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x3 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x3 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x4
+        self.W_c_x4 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x4 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x4 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x5
+        self.W_c_x5 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x5 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x5 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x6
+        self.W_c_x6 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x6 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x6 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x7
+        self.W_c_x7 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x7 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x7 = nn.Parameter(torch.Tensor(hidden_sz))
+
+        # x8
+        self.W_c_x8 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.U_c_x8 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
+        self.b_c_x8 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # o_t
         self.W_o = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
@@ -58,6 +118,7 @@ class CustomMultiInputLSTM(nn.Module):
         self.b_o = nn.Parameter(torch.Tensor(hidden_sz))
 
         # a_t
+        # QUESTION: Verständnis -> was ist das? nicht im Schaubild abgebildet
         self.W_a = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_a = nn.Parameter(torch.Tensor(hidden_sz))
 
@@ -76,6 +137,7 @@ class CustomMultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.b_c_n)
 
     def forward(self, Y, x1, x2, x3, x4, x5, x6, x7, x8):
+        # QUESTION: Datenstruktur hier? (vorher dreidimensional gewesen?) -> siehe Zeile 97; Y_t = einzelner Record mit den 5 columns?
         # Hier als Parameter die Ta-Lib-Klassenvektoren einfügen
 
         bs, seq_sz, _ = Y.size()
@@ -94,39 +156,68 @@ class CustomMultiInputLSTM(nn.Module):
 
             # Open/Close/Volume ... jeweils zu den verschiedenen (22) Zeitpunkten
             Y_t = Y[:, t, :]
-            # ---- p calculation here
-            P_t = P[:, t, :]
-            # ------------------------
-            N_t = N[:, t, :]
+            x1_t = x1[:, t, :]
+            x2_t = x2[:, t, :]
+            x3_t = x3[:, t, :]
+            x4_t = x4[:, t, :]
+            x5_t = x5[:, t, :]
+            x6_t = x6[:, t, :]
+            x7_t = x7[:, t, :]
+            x8_t = x8[:, t, :]
 
             # -> Nächster Hidden State der Sequenz wird berechnet (mithilfe der Inputs und Gewichte)
             i_t = torch.sigmoid(Y_t @ self.W_i + h_t @ self.U_i + self.b_i)
-            i_p_t = torch.sigmoid(P_t @ self.W_i_p + h_t @ self.U_i_p + self.b_i_p)
-            i_n_t = torch.sigmoid(N_t @ self.W_i_n + h_t @ self.U_i_n + self.b_i_n)
+            i_x1_t = torch.sigmoid(x1_t @ self.W_i_x1 + h_t @ self.U_i_x1 + self.b_i_x1)
+            i_x2_t = torch.sigmoid(x2_t @ self.W_i_x2 + h_t @ self.U_i_x2 + self.b_i_x2)
+            i_x3_t = torch.sigmoid(x2_t @ self.W_i_x3 + h_t @ self.U_i_x3 + self.b_i_x3)
+            i_x4_t = torch.sigmoid(x2_t @ self.W_i_x4 + h_t @ self.U_i_x4 + self.b_i_x4)
+            i_x5_t = torch.sigmoid(x2_t @ self.W_i_x5 + h_t @ self.U_i_x5 + self.b_i_x5)
+            i_x6_t = torch.sigmoid(x2_t @ self.W_i_x6 + h_t @ self.U_i_x6 + self.b_i_x6)
+            i_x7_t = torch.sigmoid(x2_t @ self.W_i_x7 + h_t @ self.U_i_x7 + self.b_i_x7)
+            i_x8_t = torch.sigmoid(x2_t @ self.W_i_x8 + h_t @ self.U_i_x8 + self.b_i_x8)
 
             f_t = torch.sigmoid(Y_t @ self.W_f + h_t @ self.U_f + self.b_f)
 
-            # QUESTION: Ist das der Punkt in Architekur Grafik?
+            # QUESTION: Ist das der Punkt in Architekur Grafik? 'Carry State'?
             C_tilde_t = torch.tanh(Y_t @ self.W_c + h_t @ self.U_c + self.b_c)
-            C_p_tilde_t = torch.tanh(P_t @ self.W_c_p + h_t @ self.U_c_p + self.b_c_p)
-            C_n_tilde_t = torch.tanh(N_t @ self.W_c_n + h_t @ self.U_c_n + self.b_c_n)
+            C_x1_tilde_t = torch.tanh(x1_t @ self.W_c_x1 + h_t @ self.U_c_x1 + self.b_c_x1)
+            C_x2_tilde_t = torch.tanh(x2_t @ self.W_c_x2 + h_t @ self.U_c_x2 + self.b_c_x2)
+            C_x3_tilde_t = torch.tanh(x3_t @ self.W_c_x3 + h_t @ self.U_c_x3 + self.b_c_x3)
+            C_x4_tilde_t = torch.tanh(x4_t @ self.W_c_x4 + h_t @ self.U_c_x4 + self.b_c_x4)
+            C_x5_tilde_t = torch.tanh(x5_t @ self.W_c_x5 + h_t @ self.U_c_x5 + self.b_c_x5)
+            C_x6_tilde_t = torch.tanh(x6_t @ self.W_c_x6 + h_t @ self.U_c_x6 + self.b_c_x6)
+            C_x7_tilde_t = torch.tanh(x7_t @ self.W_c_x7 + h_t @ self.U_c_x7 + self.b_c_x7)
+            C_x8_tilde_t = torch.tanh(x8_t @ self.W_c_x8 + h_t @ self.U_c_x8 + self.b_c_x8)
 
+            # QUESTION: Wo ist das in Architekur Grafik?
             o_t = torch.sigmoid(Y_t @ self.W_o + h_t @ self.U_o + self.b_o)
 
             # Direkt vor Attention Layer
             l_t = C_tilde_t * i_t
-            l_p_t = C_p_tilde_t * i_p_t
-            l_n_t = C_n_tilde_t * i_n_t
+            l_x1_t = C_x1_tilde_t * i_x1_t
+            l_x2_t = C_x2_tilde_t * i_x2_t
+            l_x3_t = C_x3_tilde_t * i_x3_t
+            l_x4_t = C_x4_tilde_t * i_x4_t
+            l_x5_t = C_x5_tilde_t * i_x5_t
+            l_x6_t = C_x6_tilde_t * i_x6_t
+            l_x7_t = C_x7_tilde_t * i_x7_t
+            l_x8_t = C_x8_tilde_t * i_x8_t
 
             # QUESTION: Zwischenschritt / Attention Layer?
             u_t = torch.tanh(l_t @ self.W_a * c_t + self.b_a)
-            u_p_t = torch.tanh(l_p_t @ self.W_a * c_t + self.b_a)
-            u_n_t = torch.tanh(l_n_t @ self.W_a * c_t + self.b_a)
+            u_x1_t = torch.tanh(l_x1_t @ self.W_a * c_t + self.b_a)
+            u_x2_t = torch.tanh(l_x2_t @ self.W_a * c_t + self.b_a)
+            u_x3_t = torch.tanh(l_x3_t @ self.W_a * c_t + self.b_a)
+            u_x4_t = torch.tanh(l_x4_t @ self.W_a * c_t + self.b_a)
+            u_x5_t = torch.tanh(l_x5_t @ self.W_a * c_t + self.b_a)
+            u_x6_t = torch.tanh(l_x6_t @ self.W_a * c_t + self.b_a)
+            u_x7_t = torch.tanh(l_x7_t @ self.W_a * c_t + self.b_a)
+            u_x8_t = torch.tanh(l_x8_t @ self.W_a * c_t + self.b_a)
 
-            alpha_t = torch.softmax(torch.stack([u_t, u_p_t, u_n_t]), dim=0)
+            alpha_t = torch.softmax(torch.stack([u_t, u_x1_t, u_x2_t, u_x3_t, u_x4_t, u_x5_t, u_x6_t, u_x7_t, u_x8_t]), dim=0)
 
             # Nach Attention Layer
-            L_t = alpha_t[0, :, :] * l_t + alpha_t[1, :, :] * l_p_t + alpha_t[2, :, :] * l_n_t
+            L_t = alpha_t[0, :, :] * l_t + alpha_t[1, :, :] * l_x1_t + alpha_t[2, :, :] * l_x2_t + alpha_t[3, :, :] * l_x3_t + alpha_t[4, :, :] * l_x4_t + alpha_t[5, :, :] * l_x5_t + alpha_t[6, :, :] * l_x6_t + alpha_t[7, :, :] * l_x7_t + alpha_t[8, :, :] * l_x8_t
 
             c_t = f_t * c_t + L_t
             h_t = o_t * torch.tanh(c_t)
@@ -142,6 +233,7 @@ class CustomMultiInputLSTM(nn.Module):
         return h_t, hidden_seq
 
 
+# QUESTION: Wo kommt diese Klasse vom Attention Layer ins Spiel?
 class Attention(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
