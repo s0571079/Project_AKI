@@ -9,6 +9,7 @@ Vermeidet Problem (<-> RNN) - vanishing gradients (Umso weiter entfernt von Zeit
 Gates als Konzept: Welche Inputs sind wichtig und welche können 'vergessen' werden
 """
 # QUESTION Bild in Paper: Alles gleich nur separate Input Gates?
+# QUESTION Erste 'Gate' ohne Inputs, was auch in den Attention Layer fliesst -> fliesst ja Y ein -> bleibt gleich bei uns?
 class CustomMultiInputLSTM(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):
         super().__init__()
@@ -223,6 +224,7 @@ class CustomMultiInputLSTM(nn.Module):
             h_t = o_t * torch.tanh(c_t)
 
             # In Sequenz packen, damit wir die später noch haben -> um die zum nächsten Layer weiterzugeben
+            # QUESTION -> Wieso -> das ist Wesen eines MultiInput LSTMs?
             # Unsqueeze -> Shape wird verändert
             hidden_seq.append(h_t.unsqueeze(0))
 

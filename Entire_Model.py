@@ -19,7 +19,7 @@ class Net(nn.Module):
 
         # Network architecture is described here; see network_architecture.png
         # CustomLSTM -> LSTM -> ReLu -> Linear
-        # QUESTION: Why 1 here?; Why same hidden size each here? Hidden size hier 64? Kann ich hidden_size belieig variieren?
+        # QUESTION: Why 1 here?; Why same hidden size each here? Hidden size hier 64? Kann ich hidden_size beliebig variieren?
         self.MI_LSTM_layer = milstm.CustomMultiInput_LSTM(1, hidden_size)
         self.StandardLSTM_layer = nn.LSTM(hidden_size, hidden_size)
         self.relu_layer = nn.ReLU()
