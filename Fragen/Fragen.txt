@@ -37,6 +37,12 @@ Neu:
 - CustomMultiInput_LSTM -> Z227: Wieso Weitergabe der Sequenz -> das ist Wesen eines MultiInput LSTMs?
 - CustomMultiInput_LSTM -> Z238: Wo kommt diese Klasse vom Attention Layer ins Spiel?
 
+Fragen_Neu_2:
+- CustomMultiInput_LSTM -> Z11: Bild in Paper: Alles gleich nur separate Input Gates?
+- Wichtige Punkte durchgehen ab EntireModel unten
+- Kann man die Zahl der Input Size einfach varrieren über Q?
+- Was noch machen?
+
 ----------------------------------
 ANTWORTEN
 ----------------------------------
