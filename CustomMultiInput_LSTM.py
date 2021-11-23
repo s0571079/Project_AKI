@@ -17,6 +17,7 @@ class CustomMultiInputLSTM(nn.Module):
         self.hidden_size = hidden_sz
 
         # Definiton of weights and biases
+        kennzahl_input_sz = 3
 
         # i_t
         self.W_i = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
@@ -24,42 +25,42 @@ class CustomMultiInputLSTM(nn.Module):
         self.b_i = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x1
-        self.W_i_x1 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x1 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x1 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x1 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x2
-        self.W_i_x2 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x2 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x2 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x2 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x3
-        self.W_i_x3 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x3 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x3 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x3 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x4
-        self.W_i_x4 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x4 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x4 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x4 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x5
-        self.W_i_x5 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x5 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x5 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x5 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x6
-        self.W_i_x6 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x6 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x6 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x6 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x7
-        self.W_i_x7 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x7 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x7 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x7 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x8
-        self.W_i_x8 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_i_x8 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_i_x8 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x8 = nn.Parameter(torch.Tensor(hidden_sz))
 
@@ -74,42 +75,42 @@ class CustomMultiInputLSTM(nn.Module):
         self.b_c = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x1
-        self.W_c_x1 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x1 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x1 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x1 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x2
-        self.W_c_x2 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x2 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x2 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x2 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x3
-        self.W_c_x3 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x3 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x3 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x3 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x4
-        self.W_c_x4 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x4 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x4 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x4 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x5
-        self.W_c_x5 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x5 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x5 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x5 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x6
-        self.W_c_x6 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x6 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x6 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x6 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x7
-        self.W_c_x7 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x7 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x7 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x7 = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x8
-        self.W_c_x8 = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
+        self.W_c_x8 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
         self.U_c_x8 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x8 = nn.Parameter(torch.Tensor(hidden_sz))
 
@@ -130,18 +131,39 @@ class CustomMultiInputLSTM(nn.Module):
         stdv = 1.0 / math.sqrt(self.hidden_size)
         for weight in self.parameters():
             weight.data.uniform_(-stdv, stdv)
-        torch.nn.init.zeros_(self.W_c_p)
-        torch.nn.init.zeros_(self.U_c_p)
-        torch.nn.init.zeros_(self.b_c_p)
-        torch.nn.init.zeros_(self.W_c_n)
-        torch.nn.init.zeros_(self.U_c_n)
-        torch.nn.init.zeros_(self.b_c_n)
+        torch.nn.init.zeros_(self.W_c_x1)
+        torch.nn.init.zeros_(self.U_c_x1)
+        torch.nn.init.zeros_(self.b_c_x1)
+        torch.nn.init.zeros_(self.W_c_x2)
+        torch.nn.init.zeros_(self.U_c_x2)
+        torch.nn.init.zeros_(self.b_c_x2)
+        torch.nn.init.zeros_(self.W_c_x3)
+        torch.nn.init.zeros_(self.U_c_x3)
+        torch.nn.init.zeros_(self.b_c_x3)
+        torch.nn.init.zeros_(self.W_c_x4)
+        torch.nn.init.zeros_(self.U_c_x4)
+        torch.nn.init.zeros_(self.b_c_x4)
+        torch.nn.init.zeros_(self.W_c_x5)
+        torch.nn.init.zeros_(self.U_c_x5)
+        torch.nn.init.zeros_(self.b_c_x5)
+        torch.nn.init.zeros_(self.W_c_x6)
+        torch.nn.init.zeros_(self.U_c_x6)
+        torch.nn.init.zeros_(self.b_c_x6)
+        torch.nn.init.zeros_(self.W_c_x7)
+        torch.nn.init.zeros_(self.U_c_x7)
+        torch.nn.init.zeros_(self.b_c_x7)
+        torch.nn.init.zeros_(self.W_c_x8)
+        torch.nn.init.zeros_(self.U_c_x8)
+        torch.nn.init.zeros_(self.b_c_x8)
 
     def forward(self, Y, x1, x2, x3, x4, x5, x6, x7, x8):
         # QUESTION: Datenstruktur hier? (vorher dreidimensional gewesen?) -> siehe Zeile 97; Y_t = einzelner Record mit den 5 columns?
-        # Hier als Parameter die Ta-Lib-Klassenvektoren einfügen
 
-        bs, seq_sz, _ = Y.size()
+        bs, _, seq_sz = Y.size()
+        #bs, seq_sz, _ = Y.size()
+        #seq_sz = list(Y[0].size())[1] # 22
+        #bs = len(Y)
+
         hidden_seq = []
         # init hidden State mit 0: 'leerer' Zustand, da kein State vorhanden im ersten Zeitpunkt
         # C_T auch initialisiert = Carrystate für die 'Langzeitbeobachtung'
@@ -156,15 +178,17 @@ class CustomMultiInputLSTM(nn.Module):
             # Jede TaLib Klasse bekommt separates Gate
 
             # Open/Close/Volume ... jeweils zu den verschiedenen (22) Zeitpunkten
-            Y_t = Y[:, t, :]
-            x1_t = x1[:, t, :]
-            x2_t = x2[:, t, :]
-            x3_t = x3[:, t, :]
-            x4_t = x4[:, t, :]
-            x5_t = x5[:, t, :]
-            x6_t = x6[:, t, :]
-            x7_t = x7[:, t, :]
-            x8_t = x8[:, t, :]
+            # QUESTION: ist Y_t (Open/Close/Volume/Min/Max) von einem einzelnen Tag? - müsste es dann nicht (1,5) sein?
+            # Y = 1, 5, 22
+            Y_t = Y[:, :, t] # Müsste 1, 5 sein oder?
+            x1_t = x1[:, :, t] # 1, 3?
+            x2_t = x2[:, :, t] # ...
+            x3_t = x3[:, :, t]
+            x4_t = x4[:, :, t]
+            x5_t = x5[:, :, t]
+            x6_t = x6[:, :, t]
+            x7_t = x7[:, :, t]
+            x8_t = x8[:, :, t]
 
             # -> Nächster Hidden State der Sequenz wird berechnet (mithilfe der Inputs und Gewichte)
             i_t = torch.sigmoid(Y_t @ self.W_i + h_t @ self.U_i + self.b_i)
@@ -234,33 +258,3 @@ class CustomMultiInputLSTM(nn.Module):
         # Output und die Sequenz (ggf. für nächsten Layer) zurückgeben; Bei nächstem Layer Linear würde h_t reichen
         return h_t, hidden_seq
 
-
-# QUESTION: Wo kommt diese Klasse vom Attention Layer ins Spiel?
-class Attention(nn.Module):
-    def __init__(self, input_sz: int, hidden_sz: int):
-        super().__init__()
-        self.input_size = input_sz
-        self.hidden_size = hidden_sz
-
-        # i_t
-        self.W_b = nn.Parameter(torch.Tensor(input_sz, hidden_sz))
-        self.b_b = nn.Parameter(torch.Tensor(hidden_sz))
-        self.v_b = nn.Parameter(torch.Tensor(hidden_sz))
-
-        self.init_weights()
-
-    def init_weights(self):
-        stdv = 1.0 / math.sqrt(self.hidden_size)
-        for weight in self.parameters():
-            weight.data.uniform_(-stdv, stdv)
-
-    def forward(self, Y_tilde_prime):
-
-        j_t_list = list()
-        for i in range(20):
-            temp = Y_tilde_prime[:, i, :] @ self.W_b
-            j_t_list.append(torch.tanh(temp + self.b_b) @ self.v_b.t())
-
-        beta = torch.softmax(torch.stack(j_t_list), dim=0)
-        y_tilde = Y_tilde_prime.permute(0,2,1) @ torch.unsqueeze(beta.transpose(0,1), dim=2)
-        return y_tilde.squeeze()
