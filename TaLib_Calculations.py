@@ -1,4 +1,5 @@
 import talib
+import numpy
 
 # Bollinger Bands
 def getBBands(df):
@@ -9,7 +10,7 @@ def getBBands(df):
 
     try:
         upper, middle, lower = talib.BBANDS(close.values,
-                                            timeperiod=len(close),
+                                            timeperiod=45,
                                             # number of non-biased standard deviations from the mean
                                             nbdevup=1,
                                             nbdevdn=1,
@@ -20,20 +21,20 @@ def getBBands(df):
 
     return upper, middle, lower
 
-#Double Exponential Moving Average - timeperiod>11 = nur noch NaN
-def getDEMA(df):
+#Midpoint over Period
+def getMidpoint(df):
     try:
         close = df['Close']
     except Exception as ex:
         return None
 
     try:
-        dema = talib.DEMA(close.values,
-                          timeperiod=10)
+        midpoint = talib.MIDPOINT(close.values,
+                                  timeperiod=45)
     except Exception as ex:
         return None
 
-    return dema
+    return midpoint
 
 #Momentum
 def getMomentum(df):
@@ -44,7 +45,7 @@ def getMomentum(df):
 
     try:
         mom = talib.MOM(close.values,
-                        timeperiod=len(close)-1)
+                        timeperiod=44)
     except Exception as ex:
         return None
 
@@ -56,7 +57,7 @@ def getADLine(df):
         high = df['High']
         low = df['Low']
         close = df['Close']
-        volume = df['Volume']
+        volume = df['Volume'].astype(float)
     except Exception as ex:
         return None
 
@@ -83,7 +84,7 @@ def getAverageTrueRange(df):
         atr = talib.ATR(high.values,
                         low.values,
                         close.values,
-                        timeperiod=len(close)-1)
+                        timeperiod=44)
     except Exception as ex:
         return None
 
@@ -206,7 +207,7 @@ def getLinearReg(df):
 
     try:
         linearreg = talib.LINEARREG(close.values,
-                                    timeperiod=len(close))
+                                    timeperiod=45)
     except Exception as ex:
         return None
 
@@ -218,7 +219,7 @@ def getMFI(df):
         high = df['High']
         low = df['Low']
         close = df['Close']
-        volume = df['Volume']
+        volume = df['Volume'].astype(float)
     except Exception as ex:
         return None
 
@@ -227,7 +228,7 @@ def getMFI(df):
                         low.values,
                         close.values,
                         volume.values,
-                        timeperiod=len(close)-1)
+                        timeperiod=44)
     except Exception as ex:
         return None
 
@@ -242,7 +243,7 @@ def getWMA(df):
 
     try:
         wma = talib.WMA(close.values,
-                        timeperiod=len(close))
+                        timeperiod=45)
     except Exception as ex:
         return None
 
@@ -274,7 +275,7 @@ def getADOscillator(df):
         high = df['High']
         low = df['Low']
         close = df['Close']
-        volume = df['Volume']
+        volume = df['Volume'].astype(float)
     except Exception as ex:
         return None
 
@@ -284,7 +285,7 @@ def getADOscillator(df):
                             close.values,
                             volume.values,
                             fastperiod=3,
-                            slowperiod=len(close))
+                            slowperiod=44)
     except Exception as ex:
         return None
 
@@ -294,7 +295,7 @@ def getADOscillator(df):
 def getOBV(df):
     try:
         close = df['Close']
-        volume = df['Volume']
+        volume = df['Volume'].astype(float)
     except Exception as ex:
         return None
 
@@ -355,7 +356,7 @@ def getNATR(df):
         natr = talib.ATR(high.values,
                         low.values,
                         close.values,
-                        timeperiod=len(close)-1)
+                        timeperiod=44)
     except Exception as ex:
         return None
 
@@ -388,7 +389,7 @@ def getStdDev(df):
 
     try:
         stddev = talib.STDDEV(close.values,
-                              timeperiod=len(close))
+                              timeperiod=45)
     except Exception as ex:
         return None
 
@@ -403,7 +404,7 @@ def getTSF(df):
 
     try:
         tsf = talib.TSF(close.values,
-                        timeperiod=len(close))
+                        timeperiod=45)
     except Exception as ex:
         return None
 

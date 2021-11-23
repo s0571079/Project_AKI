@@ -128,7 +128,7 @@ print("VALIDATION AND PREPROCESSING finished ...")
 upperBB = []
 middleBB = []
 lowerBB = []
-dema = []
+midpoint = []
 wma = []
 mom = []
 mfi = []
@@ -151,59 +151,203 @@ linearreg = []
 stddev = []
 tsf = []
 
+talib_values = numpy.empty([23, 200])
+
+#Merge Chunks for Ta-Lib Calculations
+ChunksMergedList = [allFilesAllChunks[0][0]]
+i = 0
+j = 0
+while i < len(allFilesAllChunks):
+    j = 0
+    while j < len(allFilesAllChunks[i]):
+        if i > 0 and j == 0:
+            ChunksMergedList.append(allFilesAllChunks[i][j])
+        if j > 0:
+            ChunksMergedList[i] = ChunksMergedList[i].append(allFilesAllChunks[i][j], ignore_index=True)
+        j = j + 1
+    i = i + 1
+
 # Calculate different parameters from different TA-LIB classes
-for allChunksSingleFile in allFilesAllChunks_validated1:
-    for chunkDf in allChunksSingleFile:
+for chunkDf in ChunksMergedList:
         # CLASS_1 : 'Overlap Studies' - Bollinger Bands (with Simple Moving Average)
         upper, middle, lower = TaLib_Calculations.getBBands(chunkDf)
-        upperBB.append(upper[21])
-        middleBB.append(middle[21])
-        lowerBB.append(lower[21])
-        #CLASS_1 : 'Overlap Studies' - Double Exponential Moving Average
-        demas = TaLib_Calculations.getDEMA(chunkDf)
-        dema.append(demas[~numpy.isnan(demas)])
+        upper_df = pandas.DataFrame(data = upper)
+        middle_df = pandas.DataFrame(data = middle)
+        lower_df = pandas.DataFrame(data = lower)
+        upperBB.append(upper_df)
+        middleBB.append(middle_df)
+        lowerBB.append(lower_df)
+        #CLASS_1 : 'Overlap Studies' - Midpoint over Period
+        midpoint.append(pandas.DataFrame(data = TaLib_Calculations.getMidpoint(chunkDf)))
         #CLASS_1 : 'Overlap Studies' - Weighted Moving Average
-        wma.append(TaLib_Calculations.getWMA(chunkDf)[21])
+        wma.append(pandas.DataFrame(data =TaLib_Calculations.getWMA(chunkDf)))
         # CLASS_2 : 'Momentum Indicators' - Momentum
-        mom.append(TaLib_Calculations.getMomentum(chunkDf)[21])
+        mom.append(pandas.DataFrame(data =TaLib_Calculations.getMomentum(chunkDf)))
         # CLASS_2 : 'Momentum Indicators' - Money Flow Index
-        mfi.append(TaLib_Calculations.getMFI(chunkDf)[21])
+        mfi.append(pandas.DataFrame(data =TaLib_Calculations.getMFI(chunkDf)))
         # CLASS_2 : 'Momentum Indicators' - Balance of Power
-        bop.append(TaLib_Calculations.getBOP(chunkDf))
+        bop.append(pandas.DataFrame(data =TaLib_Calculations.getBOP(chunkDf)))
         # CLASS_3 : 'Volume Indicators' - Chaikin Accumulation/Distribution Line
-        adline.append(TaLib_Calculations.getADLine(chunkDf))
+        adline.append(pandas.DataFrame(data =TaLib_Calculations.getADLine(chunkDf)))
         # CLASS_3 : 'Volume Indicators' - Chaikin A/D Oscillator
-        adosc.append(TaLib_Calculations.getADOscillator(chunkDf)[21])
+        adosc.append(pandas.DataFrame(data =TaLib_Calculations.getADOscillator(chunkDf)))
         # CLASS_3 : 'Volume Indicators' - On Balance Volume
-        obv.append(TaLib_Calculations.getOBV(chunkDf))
-        # CLASS_4 : 'Cycle Indicators' - Hilbert Transform - Dominant Cycle Period and Dominant Cycle Phase (DO NOT WORK)
-        #htdcperiod.append(TaLib_Calculations.getHTDCPeriod(chunkDf))
-        #htdcphase.append(TaLib_Calculations.getHTDCPhase(chunkDf))
+        obv.append(pandas.DataFrame(data =TaLib_Calculations.getOBV(chunkDf)))
         # CLASS_5 : 'Price Transform' - Average Price
-        avgprice.append(TaLib_Calculations.getAvgPrice(chunkDf))
+        avgprice.append(pandas.DataFrame(data =TaLib_Calculations.getAvgPrice(chunkDf)))
         # CLASS_5 : 'Price Transform' - Typical Price
-        typprice.append(TaLib_Calculations.getTypicalPrice(chunkDf))
+        typprice.append(pandas.DataFrame(data =TaLib_Calculations.getTypicalPrice(chunkDf)))
         # CLASS_5 : 'Price Transform' - Weighted Close Price
-        wclprice.append(TaLib_Calculations.getWClPrice(chunkDf))
+        wclprice.append(pandas.DataFrame(data =TaLib_Calculations.getWClPrice(chunkDf)))
         # CLASS_6 : 'Volatility Indicators - Average True Range
-        atr.append(TaLib_Calculations.getAverageTrueRange(chunkDf)[21])
+        atr.append(pandas.DataFrame(data =TaLib_Calculations.getAverageTrueRange(chunkDf)))
         # CLASS_6 : 'Volatility Indicators - Normalized Average True Range
-        natr.append(TaLib_Calculations.getNATR(chunkDf)[21])
+        natr.append(pandas.DataFrame(data =TaLib_Calculations.getNATR(chunkDf)))
         # CLASS_6 : 'Volatility Indicators - True Range (NaN an erster Stelle rausfilern?)
-        tr.append(TaLib_Calculations.getTrueRange(chunkDf))
+        tr.append(pandas.DataFrame(data = TaLib_Calculations.getTrueRange(chunkDf)))
         # CLASS_7 : 'Pattern Recognition' - Three Advanced White Soldiers
-        whitesoldiers.append(TaLib_Calculations.get3AWS(chunkDf))
+        whitesoldiers.append(pandas.DataFrame(data =TaLib_Calculations.get3AWS(chunkDf)))
         # CLASS_7 : 'Pattern Recognition' - Three Stars in the South
-        starsinsouth.append(TaLib_Calculations.get3SITS(chunkDf))
+        starsinsouth.append(pandas.DataFrame(data =TaLib_Calculations.get3SITS(chunkDf)))
         # CLASS_7 : 'Pattern Recognition' - Two Crows
-        twocrows.append(TaLib_Calculations.get2Crows(chunkDf))
+        twocrows.append(pandas.DataFrame(data =TaLib_Calculations.get2Crows(chunkDf)))
         # CLASS_8 : 'Statistic Functions' - Linear Regression
-        linearreg.append(TaLib_Calculations.getLinearReg(chunkDf)[21])
+        linearreg.append(pandas.DataFrame(data =TaLib_Calculations.getLinearReg(chunkDf)))
         # CLASS_8 : 'Statistic Functions' - Standard Deviation
-        stddev.append(TaLib_Calculations.getStdDev(chunkDf)[21])
+        stddev.append(pandas.DataFrame(data =TaLib_Calculations.getStdDev(chunkDf)))
         # CLASS_8 : 'Statistic Functions' - Time Series Forecast
-        tsf.append(TaLib_Calculations.getTSF(chunkDf)[21])
-print("TALIB CALCULATIONS finished ...")
+        tsf.append(pandas.DataFrame(data =TaLib_Calculations.getTSF(chunkDf)))
+
+
+print("TALIB DATA CALCULATION finished ...")
+
+# Normalize Talib Data
+columns = numpy.array(['upperBB','middleBB','lowerBB','midpoint','wma','mom','mfi','bop','adline',
+           'adosc','obv','atr','natr','tr','avgprice','typprice','wclprice',
+           'whitesoldiers','starsinsouth','twocrows','linearreg','stddev','tsf'])
+
+TaLib_list = [upperBB, middleBB, lowerBB, midpoint, wma, mom, mfi, bop, adline, adosc, obv, atr, natr, tr, avgprice,
+                          typprice, wclprice, whitesoldiers, starsinsouth, twocrows, linearreg, stddev, tsf]
+
+j = 0
+for method in TaLib_list:
+    i = 0
+    for df in method:
+        min_max_scaler = preprocessing.MinMaxScaler()
+        x = df.values
+        x_scaled = min_max_scaler.fit_transform(x)
+        table = pandas.DataFrame(x_scaled)
+        if j == 0:
+            upperBB[i] = table
+            i = i + 1
+        elif j == 1:
+            middleBB[i] = table
+            i = i + 1
+        elif j == 2:
+            lowerBB[i] = table
+            i = i + 1
+        elif j == 3:
+            midpoint[i] = table
+            i = i + 1
+        elif j == 4:
+            wma[i] = table
+            i = i + 1
+        elif j == 5:
+            mom[i] = table
+            i = i + 1
+        elif j == 6:
+            mfi[i] = table
+            i = i + 1
+        elif j == 7:
+            bop[i] = table
+            i = i + 1
+        elif j == 8:
+            adline[i] = table
+            i = i + 1
+        elif j == 9:
+            adosc[i] = table
+            i = i + 1
+        elif j == 10:
+            obv[i] = table
+            i = i + 1
+        elif j == 11:
+            atr[i] = table
+            i = i + 1
+        elif j == 12:
+            natr[i] = table
+            i = i + 1
+        elif j == 13:
+            tr[i] = table
+            i = i + 1
+        elif j == 14:
+            avgprice[i] = table
+            i = i + 1
+        elif j == 15:
+            typprice[i] = table
+            i = i + 1
+        elif j == 16:
+            wclprice[i] = table
+            i = i + 1
+        elif j == 17:
+            whitesoldiers[i] = table
+            i = i + 1
+        elif j == 18:
+            starsinsouth[i] = table
+            i = i + 1
+        elif j == 19:
+            twocrows[i] = table
+            i = i + 1
+        elif j == 20:
+            linearreg[i] = table
+            i = i + 1
+        elif j == 21:
+            stddev[i] = table
+            i = i + 1
+        elif j == 22:
+            tsf[i] = table
+            i = i + 1
+        else:
+            print('Something is wrong...')
+    j = j + 1
+
+
+#Merge normalized Chunks and Combine with Ta-Lib Data
+ChunksMergedList_validated = [allFilesAllChunks_validated1[0][0]]
+i = 0
+j = 0
+while i < len(allFilesAllChunks_validated1):
+    j = 0
+    while j < len(allFilesAllChunks_validated1[i]):
+        if i > 0 and j == 0:
+            ChunksMergedList_validated.append(allFilesAllChunks_validated1[i][j])
+        if j > 0:
+            ChunksMergedList_validated[i] = ChunksMergedList_validated[i].append(allFilesAllChunks_validated1[i][j], ignore_index=True)
+        j = j + 1
+    i = i + 1
+
+columns = numpy.array(['Open','High','Low','Close','Volume','Date','Ticker',
+                       'upperBB','middleBB','lowerBB','midpoint','wma','mom','mfi','bop','adline',
+                       'adosc','obv','atr','natr','tr','avgprice','typprice','wclprice',
+                       'whitesoldiers','starsinsouth','twocrows','linearreg','stddev','tsf'])
+
+i = 0
+allFilesAllData = []
+while i < 10:
+    allFilesAllData.append(pandas.concat([ChunksMergedList_validated[i], upperBB[i], middleBB[i], lowerBB[i], midpoint[i],
+                                          wma[i], mom[i], mfi[i], bop[i], adline[i], adosc[i], obv[i], atr[i], natr[i], tr[i], avgprice[i],
+                                          typprice[i], wclprice[i], whitesoldiers[i], starsinsouth[i], twocrows[i], linearreg[i], stddev[i], tsf[i]],
+                                         axis=1))
+    i = i + 1
+for dataFrames in allFilesAllData:
+    dataFrames.columns = columns
+
+allFilesAllDataNoNans = []
+for dataFrames in allFilesAllData:
+    temp_df = dataFrames.dropna()
+    temp_df.index = range(len(temp_df))
+    allFilesAllDataNoNans.append(temp_df)
+print("DATA NORMALIZATION AND MERGING finished...")
+
 # Save as pickle file
 """
     # Wir gehen jetzt durch die Spalten
