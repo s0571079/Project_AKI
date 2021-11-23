@@ -1,23 +1,45 @@
+----------------------------------
+FRAGEN
+----------------------------------
+
 - Wieviele Daten insgesamt genau nehmen? Hälfte?
 
-- Wie viele Talibs pro Klasse? https://github.com/mrjbq7/ta-lib
-
-- TaLib auch normalisieren?
-
-- Sind die beiden LSTMs unterschiedlich?
-
-- TaLib Funktionen erwarten -> Sequenz -> Pro Chunk der Größe t also nur ein Wert berechnen je Talib Klasse?
--> Sieht Datenstruktur dann so aus?:
-[ [Liste 22x5 (Open,Close,Volume, Min, Max], [BBANDS], [SMA], [MOM] ... ]
-bzw. auf Zeichnung
-[ [Y], [BBANDS], [SMA], [MOM] ... ]
--> - Frage Generate_Samples Zeile 133
+- Wie viele Talibs pro Klasse?
 
 - Frage in Multi-Input_LSTM Zeile 107?
 
-- Next steps
+- LSTM auf LSTM -> Deswegen im ersten Sequenz weitergeben? Ende der forward Methode?
 
-_________________________________________
+- Zusammenhang -> Netzwerk - Architektur-Zeichnung und LSTM TaLib-Klassen Input <-> Wiedersprüchlich?
+
+- TaLib Funktionen erwarten -> Sequenz -> Pro Chunk der Größe t also nur ein Wert berechnen je Talib Klasse?
+-> Sieht Datenstruktur dann so aus?:
+[ [Liste 22x5 (Open,Close,Volume], [BBANDS], [SMA], [MOM] ... ]
+bzw. auf Zeichnung
+[ [Y], [BBANDS], [SMA], [MOM] ... ]
+
+- Frage in Multi-Input_LSTM Zeile 107?
+
+- Next steps -> CUSTOM_LSTM mit separaten Gates anpassen?
+
+- Basierend auf dem Netzwerk-Architekturdiagramm: Kann alles so bleiben, nur jede Talib einzelnes Gate?
+
+Neu:
+- Entire_model.py -> Z.22: Why 1 here?; Why same hidden size each here? Hidden size hier 64? Kann ich hidden_size beliebig variieren?
+- Entire_model.py -> Z.71: What to do with batch size here?
+- CustomMultiInput_LSTM -> Z11: Bild in Paper: Alles gleich nur separate Input Gates?
+- CustomMultiInput_LSTM -> Z12: Erstes 'Gate' ohne Inputs, was auch in den Attention Layer fliesst -> fliesst ja Y ein -> bleibt gleich bei uns?
+- CustomMultiInput_LSTM -> Z122: Verständnis -> was ist das? nicht im Schaubild abgebildet
+- CustomMultiInput_LSTM -> Z141: Datenstruktur hier? (vorher dreidimensional gewesen?) -> siehe Zeile 97; Y_t = einzelner Record mit den 5 columns?
+- CustomMultiInput_LSTM -> Z182: Ist das der Punkt in Architekur Grafik? 'Carry State'?
+- CustomMultiInput_LSTM -> Z193: Wo ist das in Architekur Grafik?
+- CustomMultiInput_LSTM -> Z207: Zwischenschritt / Attention Layer?
+- CustomMultiInput_LSTM -> Z227: Wieso Weitergabe der Sequenz -> das ist Wesen eines MultiInput LSTMs?
+- CustomMultiInput_LSTM -> Z238: Wo kommt diese Klasse vom Attention Layer ins Spiel?
+
+----------------------------------
+ANTWORTEN
+----------------------------------
 
 - Soviele Daten nehmen wie geht
 

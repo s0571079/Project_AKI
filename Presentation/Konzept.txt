@@ -1,0 +1,34 @@
+Konzept
+Inhalte laut Vorgaben:
+
+---Introduce your data----
+How does the raw data look like?
+--> Basis .CSV zeigen
+What are the variables?
+--> Open,Close,Volume, Min, Max
+How is data preprocessed?
+--> Ablauf beschreiben READING DATA -> VALIDATION AND PREPROCESSING -> ENRICH DATA WITH TA-LIB PARAMETERS -> PERSIST VALUES
+What steps are taken to preprocess the raw data?
+--> siehe oben
+What is/are the dependent variable(s)?
+--> y+1
+What are the independent variables?
+--> Open,Close,Volume, Min, Max + Talib Klassen
+What alternatives have been explored?
+--> ?
+
+----Architecture of network----
+What are the different layers and how are they combined?
+--> CustomLSTM -> LSTM -> ReLu -> Linear siehe Netzwerkarchitekturdiagramm
+How do custom layers look like?
+--> LSTM Detailarchitektur Diagramm
+Which parameters (i.e. learning rate, optimization algorithm etc.) have been chosen?
+--> noch machen
+What alternatives have been exlpored?
+--> ?
+
+---Results----
+What is the loss in relation to the epochs?
+--> ?
+Which alternative worked best?
+--> ?
