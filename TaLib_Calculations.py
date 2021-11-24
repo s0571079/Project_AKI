@@ -110,34 +110,6 @@ def getAvgPrice(df):
 
     return avgprice
 
-#Hilbert Transform - Dominant Cycle Period
-def getHTDCPeriod(df):
-    try:
-        close = df['Close']
-    except Exception as ex:
-        return None
-
-    try:
-        htdcperiod = talib.HT_DCPERIOD(close.values)
-    except Exception as ex:
-        return None
-
-    return htdcperiod
-
-#Hilbert Transform - Dominant Cycle Phase
-def getHTDCPhase(df):
-    try:
-        close = df['Close']
-    except Exception as ex:
-        return None
-
-    try:
-        htdcphase = talib.HT_DCPHASE(close.values)
-    except Exception as ex:
-        return None
-
-    return htdcphase
-
 #Three Advancing White Soldiers
 def get3AWS(df):
     try:

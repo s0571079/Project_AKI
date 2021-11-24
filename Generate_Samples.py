@@ -193,29 +193,29 @@ for chunkDf in ChunksMergedList:
         adosc.append(pandas.DataFrame(data =TaLib_Calculations.getADOscillator(chunkDf)))
         # CLASS_3 : 'Volume Indicators' - On Balance Volume
         obv.append(pandas.DataFrame(data =TaLib_Calculations.getOBV(chunkDf)))
-        # CLASS_5 : 'Price Transform' - Average Price
+        # CLASS_4 : 'Price Transform' - Average Price
         avgprice.append(pandas.DataFrame(data =TaLib_Calculations.getAvgPrice(chunkDf)))
-        # CLASS_5 : 'Price Transform' - Typical Price
+        # CLASS_4 : 'Price Transform' - Typical Price
         typprice.append(pandas.DataFrame(data =TaLib_Calculations.getTypicalPrice(chunkDf)))
-        # CLASS_5 : 'Price Transform' - Weighted Close Price
+        # CLASS_4 : 'Price Transform' - Weighted Close Price
         wclprice.append(pandas.DataFrame(data =TaLib_Calculations.getWClPrice(chunkDf)))
-        # CLASS_6 : 'Volatility Indicators - Average True Range
+        # CLASS_5 : 'Volatility Indicators - Average True Range
         atr.append(pandas.DataFrame(data =TaLib_Calculations.getAverageTrueRange(chunkDf)))
-        # CLASS_6 : 'Volatility Indicators - Normalized Average True Range
+        # CLASS_5 : 'Volatility Indicators - Normalized Average True Range
         natr.append(pandas.DataFrame(data =TaLib_Calculations.getNATR(chunkDf)))
-        # CLASS_6 : 'Volatility Indicators - True Range (NaN an erster Stelle rausfilern?)
+        # CLASS_5 : 'Volatility Indicators - True Range (NaN an erster Stelle rausfilern?)
         tr.append(pandas.DataFrame(data = TaLib_Calculations.getTrueRange(chunkDf)))
-        # CLASS_7 : 'Pattern Recognition' - Three Advanced White Soldiers
+        # CLASS_6 : 'Pattern Recognition' - Three Advanced White Soldiers
         whitesoldiers.append(pandas.DataFrame(data =TaLib_Calculations.get3AWS(chunkDf)))
-        # CLASS_7 : 'Pattern Recognition' - Three Stars in the South
+        # CLASS_6 : 'Pattern Recognition' - Three Stars in the South
         starsinsouth.append(pandas.DataFrame(data =TaLib_Calculations.get3SITS(chunkDf)))
-        # CLASS_7 : 'Pattern Recognition' - Two Crows
+        # CLASS_6 : 'Pattern Recognition' - Two Crows
         twocrows.append(pandas.DataFrame(data =TaLib_Calculations.get2Crows(chunkDf)))
-        # CLASS_8 : 'Statistic Functions' - Linear Regression
+        # CLASS_7 : 'Statistic Functions' - Linear Regression
         linearreg.append(pandas.DataFrame(data =TaLib_Calculations.getLinearReg(chunkDf)))
-        # CLASS_8 : 'Statistic Functions' - Standard Deviation
+        # CLASS_7 : 'Statistic Functions' - Standard Deviation
         stddev.append(pandas.DataFrame(data =TaLib_Calculations.getStdDev(chunkDf)))
-        # CLASS_8 : 'Statistic Functions' - Time Series Forecast
+        # CLASS_7 : 'Statistic Functions' - Time Series Forecast
         tsf.append(pandas.DataFrame(data =TaLib_Calculations.getTSF(chunkDf)))
 
 
@@ -332,7 +332,7 @@ columns = numpy.array(['Open','High','Low','Close','Volume','Date','Ticker',
 
 i = 0
 allFilesAllData = []
-while i < 10:
+while i < len(ChunksMergedList_validated):
     allFilesAllData.append(pandas.concat([ChunksMergedList_validated[i], upperBB[i], middleBB[i], lowerBB[i], midpoint[i],
                                           wma[i], mom[i], mfi[i], bop[i], adline[i], adosc[i], obv[i], atr[i], natr[i], tr[i], avgprice[i],
                                           typprice[i], wclprice[i], whitesoldiers[i], starsinsouth[i], twocrows[i], linearreg[i], stddev[i], tsf[i]],
@@ -349,19 +349,6 @@ for dataFrames in allFilesAllData:
 print("DATA NORMALIZATION AND MERGING finished...")
 
 # Save as pickle file
-"""
-    # Wir gehen jetzt durch die Spalten
-    for col in correlations.columns:
-        item = dict()
-        item['y'] = targets[col]
-        # Alle Y Werte als input
-        item['Y'] = table[col]
-        pos_stocks = list(correlations[col].nlargest(21).index)  # largest correlation is with stock itself
-        pos_stocks.remove(col)
-        item['X_p'] = table[pos_stocks]
-        neg_stocks = list(correlations[col].nsmallest(20).index)
-        item['X_n'] = table[neg_stocks]
-        with open('c:/data/htw/2021_SS/AKI/Samples/' + col + '_' + str(time) + '.pkl', 'wb') as f:
-            pickle.dump(item, f, pickle.HIGHEST_PROTOCOL)
-    time = time + 1
-"""
+for dataFrames in allFilesAllDataNoNans:
+    dataFrames.to_pickle("./Pickle/"+dataFrames['Ticker'][0]+".pkl")
+print("PICKLE FILE CREATION finished...")
