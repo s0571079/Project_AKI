@@ -157,12 +157,12 @@ class CustomMultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.b_c_x8)
 
     def forward(self, Y, x1, x2, x3, x4, x5, x6, x7, x8):
-        # QUESTION: Datenstruktur hier? (vorher dreidimensional gewesen?) -> siehe Zeile 97; Y_t = einzelner Record mit den 5 columns?
-
+        # QUESTION -> verändern hier so ok?
         bs, _, seq_sz = Y.size()
-        #bs, seq_sz, _ = Y.size()
-        #seq_sz = list(Y[0].size())[1] # 22
-        #bs = len(Y)
+        #-> output // seq_sz: 22; bs: 1; _: 5
+
+        # alt: bs, seq_sz, _ = Y.size()
+        #-> output // seq_sz: 5; bs: 1; _: 22
 
         hidden_seq = []
         # init hidden State mit 0: 'leerer' Zustand, da kein State vorhanden im ersten Zeitpunkt
@@ -178,10 +178,10 @@ class CustomMultiInputLSTM(nn.Module):
             # Jede TaLib Klasse bekommt separates Gate
 
             # Open/Close/Volume ... jeweils zu den verschiedenen (22) Zeitpunkten
-            # QUESTION: ist Y_t (Open/Close/Volume/Min/Max) von einem einzelnen Tag? - müsste es dann nicht (1,5) sein?
+            # QUESTION: ist Y_t (Open/Close/Volume/Min/Max) von einem EINZELNEN TAG? - müsste es dann (1,5) sein?
             # Y = 1, 5, 22
-            Y_t = Y[:, :, t] # Müsste 1, 5 sein oder?
-            x1_t = x1[:, :, t] # 1, 3?
+            Y_t = Y[:, :, t] # Müsste 1, 5 (Open/Close/Volume/Min/Max) sein oder?
+            x1_t = x1[:, :, t] # Müsste 1, 3 (Kennzahl1/Kennzahl2/Kennzahl3) sein oder?
             x2_t = x2[:, :, t] # ...
             x3_t = x3[:, :, t]
             x4_t = x4[:, :, t]
@@ -191,6 +191,7 @@ class CustomMultiInputLSTM(nn.Module):
             x8_t = x8[:, :, t]
 
             # -> Nächster Hidden State der Sequenz wird berechnet (mithilfe der Inputs und Gewichte)
+            # QUESTION -> Änderung Input Sizes oben
             i_t = torch.sigmoid(Y_t @ self.W_i + h_t @ self.U_i + self.b_i)
             i_x1_t = torch.sigmoid(x1_t @ self.W_i_x1 + h_t @ self.U_i_x1 + self.b_i_x1)
             i_x2_t = torch.sigmoid(x2_t @ self.W_i_x2 + h_t @ self.U_i_x2 + self.b_i_x2)
@@ -203,7 +204,6 @@ class CustomMultiInputLSTM(nn.Module):
 
             f_t = torch.sigmoid(Y_t @ self.W_f + h_t @ self.U_f + self.b_f)
 
-            # QUESTION: Ist das der Punkt in Architekur Grafik? 'Carry State'?
             C_tilde_t = torch.tanh(Y_t @ self.W_c + h_t @ self.U_c + self.b_c)
             C_x1_tilde_t = torch.tanh(x1_t @ self.W_c_x1 + h_t @ self.U_c_x1 + self.b_c_x1)
             C_x2_tilde_t = torch.tanh(x2_t @ self.W_c_x2 + h_t @ self.U_c_x2 + self.b_c_x2)
@@ -214,7 +214,6 @@ class CustomMultiInputLSTM(nn.Module):
             C_x7_tilde_t = torch.tanh(x7_t @ self.W_c_x7 + h_t @ self.U_c_x7 + self.b_c_x7)
             C_x8_tilde_t = torch.tanh(x8_t @ self.W_c_x8 + h_t @ self.U_c_x8 + self.b_c_x8)
 
-            # QUESTION: Wo ist das in Architekur Grafik?
             o_t = torch.sigmoid(Y_t @ self.W_o + h_t @ self.U_o + self.b_o)
 
             # Direkt vor Attention Layer
@@ -228,7 +227,7 @@ class CustomMultiInputLSTM(nn.Module):
             l_x7_t = C_x7_tilde_t * i_x7_t
             l_x8_t = C_x8_tilde_t * i_x8_t
 
-            # QUESTION: Zwischenschritt / Attention Layer?
+            # Zwischenschritt / Attention Layer
             u_t = torch.tanh(l_t @ self.W_a * c_t + self.b_a)
             u_x1_t = torch.tanh(l_x1_t @ self.W_a * c_t + self.b_a)
             u_x2_t = torch.tanh(l_x2_t @ self.W_a * c_t + self.b_a)
@@ -248,7 +247,6 @@ class CustomMultiInputLSTM(nn.Module):
             h_t = o_t * torch.tanh(c_t)
 
             # In Sequenz packen, damit wir die später noch haben -> um die zum nächsten Layer weiterzugeben
-            # QUESTION -> Wieso -> das ist Wesen eines MultiInput LSTMs?
             # Unsqueeze -> Shape wird verändert
             hidden_seq.append(h_t.unsqueeze(0))
 
