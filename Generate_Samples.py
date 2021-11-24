@@ -1,5 +1,6 @@
 """
 This file is used to generate the pickle files in the desired format to feed it to the neuronal network.
+For visualisation see './Grafiken/Basic_procedure.png'
 
 Steps which happen here:
 

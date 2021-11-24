@@ -5,6 +5,15 @@ import math
 """
 Describes the custom MultiInput LSTM cell
 For visualisation see './Grafiken/CustomLSTM_Architecture.png'
+
+Steps which happen here:
+
+DEFINITION OF ARCHITECTURE OF CUSTOM MULTI INPUT LSTM CELL
+- Definition & initialisation of weights and biases
+- Implementation of 7 separate gates - one for each TaLib-class 
+- Forward step: calculate the next hidden state based on the defined inputs and the weights
+(in detail in './Grafiken/CustomLSTM_Architecture.png')
+- Return the output and the hidden state for the next LSTM
 """
 class CustomMultiInputLSTM(nn.Module):
     def __init__(self, input_sz: int, hidden_sz: int):

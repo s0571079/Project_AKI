@@ -13,6 +13,24 @@ from torch.utils.data import DataLoader
 """
 Describes the entire network architecture
 For visualisation see './Grafiken/EntireNetwork_Architecture.png'
+
+Steps which happen here:
+
+READ INPUT (DataSet class)
+- Read the previously generated pickle files (by Generate_Samples.py)
+- Divide them into chunks of size T = 22
+- Convert them from DataFrames to arrays/lists/dicts
+
+DEFINITION OF BASIC NETWORK ARCHITECTURE
+- Definition of the four main layers CustomLSTM -> LSTM -> ReLu -> Linear
+- Definition of some pre-settings like hidden_size & batch_size
+- Definition of the forward steps between the layers
+
+FEED AND EVALUATE
+- Feed the pickle data into the network
+- Calculate error
+- Plot results
+
 """
 class Net(nn.Module):
 
