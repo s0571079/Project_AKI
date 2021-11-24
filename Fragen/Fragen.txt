@@ -41,7 +41,18 @@ Fragen_Neu_2:
 - CustomMultiInput_LSTM -> Z11: Bild in Paper: Alles gleich nur separate Input Gates?
 - Wichtige Punkte durchgehen ab EntireModel unten
 - Kann man die Zahl der Input Size einfach varrieren über Q?
-- Was noch machen?
+- Next steps - was machen, verbessern?
+
+TODO:
+- Input
+- Fehler errechnen -> Plots erstellen
+- Performancewerte je nach Epoche
+- Mehrere Layers, Anzahl Hidden Nodes
+- 8 Inputs Gates rausnehmen -> bringen die Zusatz Talib Gates was? -> mal einen raus usw.
+PRESENTATION:
+- Presentation: Window bei einlesen -> Samplegenerierung
+- Auf Talib eingehen
+- PLOTS als Result
 
 ----------------------------------
 ANTWORTEN

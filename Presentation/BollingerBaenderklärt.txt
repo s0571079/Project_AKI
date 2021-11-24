@@ -1,0 +1,21 @@
+Bollinger Bänder:
+- John Bollinger in den 80er Jahren entwickelt
+- Aus Klasse Overlap Studies
+- statistisches Phänomen: Häufung in der Mitte -> unter Vernachlässigung von einzelnen Ausreißer -> alles in einer relativ engen Spanne zu finden ist
+- Man berechnet die Standardabweichung (= Schwankung um Durchschnitt)
+-  Einmal addiert man die Standardabweichung zum 20. Tage Schnitt zu; das andere mal subtrahiert man
+- -> 3 Bänder -> 3 gleitende Durchschnitte 
+- mittleres ist der gleitende Durchscnitt
+- oberes und untere sind quasi feste Abweichungen zu diesem Durchschnitt
+Handelssignale:
+- Sobald sich die Bänder dem zugrunde liegenden 20-Tage-Durchschnitt annähern, steht eine massive Kursbewegung (aufwärts oder abwärts) bevor.
+- Kurse tendieren dazu, von einem Band zum anderen zu laufen. Notiert ein Kurs in der Nähe des einen Bandes, so ist kurzfristig eine gegensätzliche Tendenz in Richtung auf das andere Band zu erwarten.
+- Bricht ein Kurs aus dem Bollinger-Band aus, so ist eine weitere Bewegung in Ausbruchsrichtung zu erwarten
+
+
+Erklärung:
+MultiInput LSTM:
+Sequenziell -> Inputs zu mehreren Zeitpunkten;
+Vermeidet Problem (<-> RNN) - vanishing gradients (Umso weiter entfernt von Zeitpunkt t umso weniger Einfluss)
+"Long Short Term Memory"
+Gates als Konzept: Welche Inputs sind wichtig und welche können 'vergessen' werden

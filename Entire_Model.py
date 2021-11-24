@@ -1,41 +1,37 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
 import torch.optim as optim
-from os import listdir
 import random
 import pickle
 import CustomMultiInput_LSTM as lstm
-import pandas
 import numpy
+from os import listdir
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 
-# Entire network architecture
+
+"""
+Describes the entire network architecture
+For visualisation see './Grafiken/EntireNetwork_Architecture.png'
+"""
 class Net(nn.Module):
 
     def __init__(self, seq_size, hidden_size):
         super(Net, self).__init__()
         self.seq_size = seq_size
 
-        # ? Sequence Size?
-
-        # Network architecture is described here; see network_architecture.png
         # CustomLSTM -> LSTM -> ReLu -> Linear
-        # QUESTION: Kann ich hidden_size beliebig variieren?
         self.MI_LSTM_layer = lstm.CustomMultiInputLSTM(5, hidden_size)
         self.StandardLSTM_layer = nn.LSTM(hidden_size, hidden_size)
         self.relu_layer = nn.ReLU()
         self.lin_layer = nn.Linear(hidden_size, 1)
 
-    def forward(self, Y, x1, x2, x3, x4, x5, x6, x7, x8):
+    def forward(self, Y, x1, x2, x3, x4, x5, x6, x7):
         # Executed when input is passed into the neural network
-        # Put the data through the layers -> CustomLSTM -> LSTM -> ReLu -> Linear
-        # Pass sequence as parameter for second layer
-        output, hidden = self.MI_LSTM_layer(Y, x1, x2, x3, x4, x5, x6, x7, x8)
+        output, hidden = self.MI_LSTM_layer(Y, x1, x2, x3, x4, x5, x6, x7)
         # output = 1, 64 // hidden = 1, 22, 64
-        # QUESTION1: output müsste passen -> da 64 Knoten im Layer; bei hidden passt von shape, wieso 22/64?
-        # QUESTION2: -> Übergabe an nächstes LSTM Output nicht in nächsten LSTM geben?
         output, hidden = self.StandardLSTM_layer(hidden)
+        # Note that the hidden sequence is passed here
         output = self.relu_layer(output)
         output = self.lin_layer(output)
         return output
@@ -61,60 +57,46 @@ class StockDataSet(Dataset):
         # x_1 = Klasse 1: 22 x 3 (bei 3 Talib Kennzahlen)
         # x_2 = Klasse 2: 22 x 3 (bei 3 Talib Kennzahlen)
         # ...
-        # x_8 = Klasse 8: 22 x 3 (bei 3 Talib Kennzahlen)
-        #Y = item['Y'].to_numpy()
-        #y = item['y']
-        #X_p = item['X_p'].to_numpy()
-        #X_n = item['X_n'].to_numpy()
-
+        # x_7 = Klasse 8: 22 x 3 (bei 3 Talib Kennzahlen)
+        # Y = item['Y'].to_numpy()
+        # y = item['y']
+        # X_p = item['X_p'].to_numpy()
+        # X_n = item['X_n'].to_numpy()
 
         # No dataframes here, only dicts and lists
         numpyArrayNumbers = random.sample(range(100, 300), 22)
         numpyArrayNumbersKennzahlen = random.sample(range(3, 30), 22)
 
-        yData = numpy.array([numpyArrayNumbers,numpyArrayNumbers,numpyArrayNumbers,numpyArrayNumbers,numpyArrayNumbers])
+        yData = numpy.array(
+            [numpyArrayNumbers, numpyArrayNumbers, numpyArrayNumbers, numpyArrayNumbers, numpyArrayNumbers])
         y = 0.234
         xData = numpy.array([numpyArrayNumbersKennzahlen, numpyArrayNumbersKennzahlen, numpyArrayNumbersKennzahlen])
 
-        return yData, y, xData, xData, xData, xData, xData, xData, xData, xData
+        return yData, y, xData, xData, xData, xData, xData, xData, xData
 
 
-# QUESTION: Sqc Size hier 22?
+# The time window is 22 days
 T = 22
-q = 64
+numberOfNodesPerLayer = 64
+batch_size = 1
 
-# Read the pickle files here
-# QUESTION: What to do with batch size here?
-batch_size = 1 # gibt an, wieviele Daten jeweils reingeladen werden zum trainieren (Speicher)
 dataset = StockDataSet()
 loader = DataLoader(dataset=dataset, batch_size=batch_size)
 
-# QUESTION q ist hidden size? kann man variieren?
-net = Net(T, q)
+net = Net(T, numberOfNodesPerLayer)
 
 criterion = nn.L1Loss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-item = [({'Kennzahl1': [random.sample(range(1, 30), 22)], 'Kennzahl2': [random.sample(range(1, 30), 22)], 'Kennzahl3': [random.sample(range(1, 30), 22)]})]
-
-with open('c:/data/htw/KI_Project/Samples/test2.pkl', 'wb') as f:
-    pickle.dump(item, f, pickle.HIGHEST_PROTOCOL)
 
 for epoch in range(10):
 
     running_loss = 0
 
-    # Loop through every record
     # T = 22
-    for Y, y, x1, x2, x3, x4, x5, x6, x7, x8 in loader:
+    for Y, y, x1, x2, x3, x4, x5, x6, x7 in loader:
         optimizer.zero_grad()
-        # QUESTION: Input ins Netzwerk: Datenstrukturen
-        # Y = 1, 5, 22
-        # x1 = 1, 3 ,22 (bei 3 Kennzahlen pro Klasse)
-        # x2 = 1, 3 ,22
-        # x3 = ....
-        # y = 1 Wert -> Wird eine Liste in der Größe der Anzahl der Batch size?
-        outputs = net(Y.float(), x1.float(), x2.float(), x3.float(), x4.float(), x5.float(), x6.float(), x7.float(), x8.float())
-        # Vergleich mit labels
+        # Shapes:  Y = (1, 5, 22); x1 = (1, 3 ,22) (bei 3 Kennzahlen pro Klasse); x2 = ...
+        outputs = net(Y.float(), x1.float(), x2.float(), x3.float(), x4.float(), x5.float(), x6.float(), x7.float())
         loss = criterion(torch.squeeze(outputs), y.float())
         loss.backward()
         optimizer.step()
@@ -122,3 +104,6 @@ for epoch in range(10):
         print(loss.item())
 
     print('Epoch loss: ' + str(running_loss / len(loader)))
+
+
+# TODO: Plot results
