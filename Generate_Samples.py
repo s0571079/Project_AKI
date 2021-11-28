@@ -45,7 +45,7 @@ pickle_files_folder_path = "missing"
 # loop settings
 numberOfFilesToRead = 10
 chunksPerFileToRead = 20
-chunkSize = 22 # size of rows in one chunk
+chunkSize = 23 # size of rows in one chunk
 
 # init variables
 allFilesAllChunks = []
@@ -171,7 +171,7 @@ while i < len(allFilesAllChunks):
 # Calculate different parameters from different TA-LIB classes
 for chunkDf in ChunksMergedList:
         # CLASS_1 : 'Overlap Studies' - Bollinger Bands (with Simple Moving Average)
-        upper, middle, lower = TaLib_Calculations.getBBands(chunkDf)
+        upper, middle, lower = TaLib_Calculations.getBBands(chunkDf, chunkSize)
         upper_df = pandas.DataFrame(data = upper)
         middle_df = pandas.DataFrame(data = middle)
         lower_df = pandas.DataFrame(data = lower)
@@ -179,19 +179,19 @@ for chunkDf in ChunksMergedList:
         middleBB.append(middle_df)
         lowerBB.append(lower_df)
         #CLASS_1 : 'Overlap Studies' - Midpoint over Period
-        midpoint.append(pandas.DataFrame(data = TaLib_Calculations.getMidpoint(chunkDf)))
+        midpoint.append(pandas.DataFrame(data = TaLib_Calculations.getMidpoint(chunkDf, chunkSize)))
         #CLASS_1 : 'Overlap Studies' - Weighted Moving Average
-        wma.append(pandas.DataFrame(data =TaLib_Calculations.getWMA(chunkDf)))
+        wma.append(pandas.DataFrame(data =TaLib_Calculations.getWMA(chunkDf, chunkSize)))
         # CLASS_2 : 'Momentum Indicators' - Momentum
-        mom.append(pandas.DataFrame(data =TaLib_Calculations.getMomentum(chunkDf)))
+        mom.append(pandas.DataFrame(data =TaLib_Calculations.getMomentum(chunkDf, chunkSize)))
         # CLASS_2 : 'Momentum Indicators' - Money Flow Index
-        mfi.append(pandas.DataFrame(data =TaLib_Calculations.getMFI(chunkDf)))
+        mfi.append(pandas.DataFrame(data =TaLib_Calculations.getMFI(chunkDf, chunkSize)))
         # CLASS_2 : 'Momentum Indicators' - Balance of Power
         bop.append(pandas.DataFrame(data =TaLib_Calculations.getBOP(chunkDf)))
         # CLASS_3 : 'Volume Indicators' - Chaikin Accumulation/Distribution Line
         adline.append(pandas.DataFrame(data =TaLib_Calculations.getADLine(chunkDf)))
         # CLASS_3 : 'Volume Indicators' - Chaikin A/D Oscillator
-        adosc.append(pandas.DataFrame(data =TaLib_Calculations.getADOscillator(chunkDf)))
+        adosc.append(pandas.DataFrame(data =TaLib_Calculations.getADOscillator(chunkDf, chunkSize)))
         # CLASS_3 : 'Volume Indicators' - On Balance Volume
         obv.append(pandas.DataFrame(data =TaLib_Calculations.getOBV(chunkDf)))
         # CLASS_4 : 'Price Transform' - Average Price
@@ -201,9 +201,9 @@ for chunkDf in ChunksMergedList:
         # CLASS_4 : 'Price Transform' - Weighted Close Price
         wclprice.append(pandas.DataFrame(data =TaLib_Calculations.getWClPrice(chunkDf)))
         # CLASS_5 : 'Volatility Indicators - Average True Range
-        atr.append(pandas.DataFrame(data =TaLib_Calculations.getAverageTrueRange(chunkDf)))
+        atr.append(pandas.DataFrame(data =TaLib_Calculations.getAverageTrueRange(chunkDf, chunkSize)))
         # CLASS_5 : 'Volatility Indicators - Normalized Average True Range
-        natr.append(pandas.DataFrame(data =TaLib_Calculations.getNATR(chunkDf)))
+        natr.append(pandas.DataFrame(data =TaLib_Calculations.getNATR(chunkDf, chunkSize)))
         # CLASS_5 : 'Volatility Indicators - True Range (NaN an erster Stelle rausfilern?)
         tr.append(pandas.DataFrame(data = TaLib_Calculations.getTrueRange(chunkDf)))
         # CLASS_6 : 'Pattern Recognition' - Three Advanced White Soldiers
@@ -213,11 +213,11 @@ for chunkDf in ChunksMergedList:
         # CLASS_6 : 'Pattern Recognition' - Two Crows
         twocrows.append(pandas.DataFrame(data =TaLib_Calculations.get2Crows(chunkDf)))
         # CLASS_7 : 'Statistic Functions' - Linear Regression
-        linearreg.append(pandas.DataFrame(data =TaLib_Calculations.getLinearReg(chunkDf)))
+        linearreg.append(pandas.DataFrame(data =TaLib_Calculations.getLinearReg(chunkDf, chunkSize)))
         # CLASS_7 : 'Statistic Functions' - Standard Deviation
-        stddev.append(pandas.DataFrame(data =TaLib_Calculations.getStdDev(chunkDf)))
+        stddev.append(pandas.DataFrame(data =TaLib_Calculations.getStdDev(chunkDf, chunkSize)))
         # CLASS_7 : 'Statistic Functions' - Time Series Forecast
-        tsf.append(pandas.DataFrame(data =TaLib_Calculations.getTSF(chunkDf)))
+        tsf.append(pandas.DataFrame(data =TaLib_Calculations.getTSF(chunkDf, chunkSize)))
 
 
 print("TALIB DATA CALCULATION finished ...")
@@ -331,6 +331,10 @@ columns = numpy.array(['Open','High','Low','Close','Volume','Date','Ticker',
                        'adosc','obv','atr','natr','tr','avgprice','typprice','wclprice',
                        'whitesoldiers','starsinsouth','twocrows','linearreg','stddev','tsf'])
 
+
+
+
+
 i = 0
 allFilesAllData = []
 while i < len(ChunksMergedList_validated):
@@ -349,7 +353,19 @@ for dataFrames in allFilesAllData:
     allFilesAllDataNoNans.append(temp_df)
 print("DATA NORMALIZATION AND MERGING finished...")
 
-# Save as pickle file
+dataFramesPickleSize = []
 for dataFrames in allFilesAllDataNoNans:
-    dataFrames.to_pickle("./Pickle/"+dataFrames['Ticker'][0]+".pkl")
+    temp = numpy.array_split(dataFrames, (chunksPerFileToRead-2))
+    for df in temp:
+        if len(df.index) > chunkSize:
+            df.drop(df.tail(1).index, inplace=True)
+    dataFramesPickleSize.append(temp)
+
+
+# Save as pickle file
+for dataFramesList in dataFramesPickleSize:
+    i = 0
+    for dataFrames in dataFramesList:
+        i = i + 1
+        dataFrames.to_pickle("./Pickle/"+dataFrames.iloc[1]['Ticker']+"_"+str(i)+".pkl")
 print("PICKLE FILE CREATION finished...")

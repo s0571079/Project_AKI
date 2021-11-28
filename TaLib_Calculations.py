@@ -2,7 +2,7 @@ import talib
 import numpy
 
 # Bollinger Bands
-def getBBands(df):
+def getBBands(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -10,7 +10,7 @@ def getBBands(df):
 
     try:
         upper, middle, lower = talib.BBANDS(close.values,
-                                            timeperiod=45,
+                                            timeperiod=(2*chunkSize+1),
                                             # number of non-biased standard deviations from the mean
                                             nbdevup=1,
                                             nbdevdn=1,
@@ -22,7 +22,7 @@ def getBBands(df):
     return upper, middle, lower
 
 #Midpoint over Period
-def getMidpoint(df):
+def getMidpoint(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -30,14 +30,14 @@ def getMidpoint(df):
 
     try:
         midpoint = talib.MIDPOINT(close.values,
-                                  timeperiod=45)
+                                  timeperiod=(2*chunkSize+1))
     except Exception as ex:
         return None
 
     return midpoint
 
 #Momentum
-def getMomentum(df):
+def getMomentum(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -45,7 +45,7 @@ def getMomentum(df):
 
     try:
         mom = talib.MOM(close.values,
-                        timeperiod=44)
+                        timeperiod=(2*chunkSize))
     except Exception as ex:
         return None
 
@@ -72,7 +72,7 @@ def getADLine(df):
     return adline
 
 #Average True Range
-def getAverageTrueRange(df):
+def getAverageTrueRange(df, chunkSize):
     try:
         high = df['High']
         low = df['Low']
@@ -84,7 +84,7 @@ def getAverageTrueRange(df):
         atr = talib.ATR(high.values,
                         low.values,
                         close.values,
-                        timeperiod=44)
+                        timeperiod=(2*chunkSize))
     except Exception as ex:
         return None
 
@@ -171,7 +171,7 @@ def get2Crows(df):
     return twocrows
 
 #Linear Regression
-def getLinearReg(df):
+def getLinearReg(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -179,14 +179,14 @@ def getLinearReg(df):
 
     try:
         linearreg = talib.LINEARREG(close.values,
-                                    timeperiod=45)
+                                    timeperiod=(2*chunkSize+1))
     except Exception as ex:
         return None
 
     return linearreg
 
 #Money Flow Index
-def getMFI(df):
+def getMFI(df, chunkSize):
     try:
         high = df['High']
         low = df['Low']
@@ -200,14 +200,14 @@ def getMFI(df):
                         low.values,
                         close.values,
                         volume.values,
-                        timeperiod=44)
+                        timeperiod=(2*chunkSize))
     except Exception as ex:
         return None
 
     return mfi
 
 #Weighted Moving Average
-def getWMA(df):
+def getWMA(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -215,7 +215,7 @@ def getWMA(df):
 
     try:
         wma = talib.WMA(close.values,
-                        timeperiod=45)
+                        timeperiod=(2*chunkSize+1))
     except Exception as ex:
         return None
 
@@ -242,7 +242,7 @@ def getBOP(df):
     return bop
 
 #Chaikin A/D Oscillator
-def getADOscillator(df):
+def getADOscillator(df, chunkSize):
     try:
         high = df['High']
         low = df['Low']
@@ -257,7 +257,7 @@ def getADOscillator(df):
                             close.values,
                             volume.values,
                             fastperiod=3,
-                            slowperiod=44)
+                            slowperiod=(2*chunkSize))
     except Exception as ex:
         return None
 
@@ -316,7 +316,7 @@ def getWClPrice(df):
     return wclprice
 
 #Normalized Average True Range
-def getNATR(df):
+def getNATR(df, chunkSize):
     try:
         high = df['High']
         low = df['Low']
@@ -328,7 +328,7 @@ def getNATR(df):
         natr = talib.ATR(high.values,
                         low.values,
                         close.values,
-                        timeperiod=44)
+                        timeperiod=(2*chunkSize))
     except Exception as ex:
         return None
 
@@ -353,7 +353,7 @@ def getTrueRange(df):
     return tr
 
 #Standard Deviation
-def getStdDev(df):
+def getStdDev(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -361,14 +361,14 @@ def getStdDev(df):
 
     try:
         stddev = talib.STDDEV(close.values,
-                              timeperiod=45)
+                              timeperiod=(2*chunkSize+1))
     except Exception as ex:
         return None
 
     return stddev
 
 #Time Series Forecast
-def getTSF(df):
+def getTSF(df, chunkSize):
     try:
         close = df['Close']
     except Exception as ex:
@@ -376,7 +376,7 @@ def getTSF(df):
 
     try:
         tsf = talib.TSF(close.values,
-                        timeperiod=45)
+                        timeperiod=(2*chunkSize+1))
     except Exception as ex:
         return None
 
