@@ -1,0 +1,12 @@
+Raw Input:
+Open    Close  Volume   Min     Max
+10	20	200	5	20
+10	20	200	5	20
+10	20	200	5	20
+
+
+Normalisiert Input:
+Open    Close  Volume   Min     Max
+10	20	200	5	20
+10	20	200	5	20
+10	20	200	5	20

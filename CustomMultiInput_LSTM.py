@@ -30,7 +30,7 @@ class CustomMultiInputLSTM(nn.Module):
         self.b_i = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x1
-        self.W_i_x1 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
+        self.W_i_x1 = nn.Parameter(torch.Tensor(5, hidden_sz))
         self.U_i_x1 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_i_x1 = nn.Parameter(torch.Tensor(hidden_sz))
 
@@ -75,7 +75,7 @@ class CustomMultiInputLSTM(nn.Module):
         self.b_c = nn.Parameter(torch.Tensor(hidden_sz))
 
         # x1
-        self.W_c_x1 = nn.Parameter(torch.Tensor(kennzahl_input_sz, hidden_sz))
+        self.W_c_x1 = nn.Parameter(torch.Tensor(5, hidden_sz))
         self.U_c_x1 = nn.Parameter(torch.Tensor(hidden_sz, hidden_sz))
         self.b_c_x1 = nn.Parameter(torch.Tensor(hidden_sz))
 
@@ -148,7 +148,7 @@ class CustomMultiInputLSTM(nn.Module):
         torch.nn.init.zeros_(self.b_c_x7)
 
     def forward(self, Y, x1, x2, x3, x4, x5, x6, x7):
-        bs, _, seq_sz = Y.size()
+        bs, seq_sz, _ = Y.size()
         # -> output // seq_sz: 22; bs: 1; _: 5
 
         hidden_seq = []
@@ -164,14 +164,14 @@ class CustomMultiInputLSTM(nn.Module):
         for t in range(seq_sz):
 
             # Open/Close/Volume ... at the different points in time
-            Y_t = Y[:, :, t]  # Shape: (1, 5) (Open/Close/Volume/Min/Max)
-            x1_t = x1[:, :, t]  # Shape: (1, 3) (Kennzahl1/Kennzahl2/Kennzahl3)
-            x2_t = x2[:, :, t]  # ...
-            x3_t = x3[:, :, t]
-            x4_t = x4[:, :, t]
-            x5_t = x5[:, :, t]
-            x6_t = x6[:, :, t]
-            x7_t = x7[:, :, t]
+            Y_t = Y[:, t, :]  # Shape: (1, 5) (Open/Close/Volume/Min/Max)
+            x1_t = x1[:, t, :]  # Shape: (1, 3) (Kennzahl1/Kennzahl2/Kennzahl3)
+            x2_t = x2[:, t, :]  # ...
+            x3_t = x3[:, t, :]
+            x4_t = x4[:, t, :]
+            x5_t = x5[:, t, :]
+            x6_t = x6[:, t, :]
+            x7_t = x7[:, t, :]
 
             # -> Calculate the next hidden state based on the inputs and the weights
             i_t = torch.sigmoid(Y_t @ self.W_i + h_t @ self.U_i + self.b_i)  # hier

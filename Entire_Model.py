@@ -47,11 +47,20 @@ class Net(nn.Module):
     def forward(self, Y, x1, x2, x3, x4, x5, x6, x7):
         # Executed when input is passed into the neural network
         output, hidden = self.MI_LSTM_layer(Y, x1, x2, x3, x4, x5, x6, x7)
-        # output = 1, 64 // hidden = 1, 22, 64
-        output, hidden = self.StandardLSTM_layer(hidden)
+        # output shape = 1, 64 // hidden = 1, 22, 64
+
         # Note that the hidden sequence is passed here
-        output = self.relu_layer(output)
+        hidden = torch.transpose(hidden, 0, 1)
+        output, hidden = self.StandardLSTM_layer(hidden)
+        # output shape = 1, 22, 64
+
+        output = self.relu_layer(hidden[0])
+        # output shape = 1, 22, 64
+
         output = self.lin_layer(output)
+        # output shape = 1, 22, 1
+
+        # I need to get the output shape as one single value
         return output
 
 
@@ -59,38 +68,38 @@ class StockDataSet(Dataset):
 
     def __init__(self):
         # make a list containing the path to all your pkl files
-        self.paths = listdir('c:/data/htw/KI_Project/Samples/')
+        self.paths = listdir('./Pickle/')
         random.shuffle(self.paths)
 
     def __len__(self):
         return len(self.paths)
 
     def __getitem__(self, idx):
-        with open('c:/data/htw/KI_Project/Samples/' + self.paths[idx], 'rb') as f:
+        with open('./Pickle/' + self.paths[idx], 'rb') as f:
             item = pickle.load(f)
-        # Für jede einzelne Aktie, jeden einzelnen Zeitpunkt werden die Daten hier ausgelesen
-        # [ [Liste 22x5 (Open,Close,Volume, Min, Max], (Talib-Klasse1), (Talib-Klasse2) ... ]
-        # Y = 22x5 (Open,Close,Volume, Min, Max) df
-        # y = labels -> Wert, der vorhergesagt werden soll (y+1) -> also ein float Wert
-        # x_1 = Klasse 1: 22 x 3 (bei 3 Talib Kennzahlen)
-        # x_2 = Klasse 2: 22 x 3 (bei 3 Talib Kennzahlen)
-        # ...
-        # x_7 = Klasse 8: 22 x 3 (bei 3 Talib Kennzahlen)
-        # Y = item['Y'].to_numpy()
-        # y = item['y']
-        # X_p = item['X_p'].to_numpy()
-        # X_n = item['X_n'].to_numpy()
+        # [ [Liste 22x5 (Open,Close,Volume, Min, Max], (Talib-Klasse1, 22x5), (Talib-Klasse2, 22x 3) ... ]
+        Y = item[["Open", "High", "Low", "Close", "Volume"]].to_numpy()
+        y = item.loc[item.index[-1], "Close"]
 
-        # No dataframes here, only dicts and lists
-        numpyArrayNumbers = random.sample(range(100, 300), 22)
-        numpyArrayNumbersKennzahlen = random.sample(range(3, 30), 22)
+        print(f.name)
+        Y = Y[:-1]
 
-        yData = numpy.array(
-            [numpyArrayNumbers, numpyArrayNumbers, numpyArrayNumbers, numpyArrayNumbers, numpyArrayNumbers])
-        y = 0.234
-        xData = numpy.array([numpyArrayNumbersKennzahlen, numpyArrayNumbersKennzahlen, numpyArrayNumbersKennzahlen])
+        # Overlap Studies
+        x_1 = item[["upperBB", "middleBB", "lowerBB", "midpoint", "wma"]].to_numpy()
+        # Momentum Indicators
+        x_2 = item[["mom", "mfi", "bop"]].to_numpy()
+        # Volume Indicators
+        x_3 = item[["adline", "adosc", "obv"]].to_numpy()
+        # Volability Indicators
+        x_4 = item[["atr", "natr", "tr"]].to_numpy()
+        # Price Transform
+        x_5 = item[["avgprice", "typprice", "wclprice"]].to_numpy()
+        # Pattern Recognition
+        x_6 = item[["whitesoldiers", "starsinsouth", "twocrows"]].to_numpy()
+        # Statistic Functions
+        x_7 = item[["linearreg", "stddev", "tsf"]].to_numpy()
 
-        return yData, y, xData, xData, xData, xData, xData, xData, xData
+        return Y, y, x_1, x_2, x_3, x_4, x_5, x_6, x_7
 
 
 # The time window is 22 days
@@ -114,12 +123,18 @@ for epoch in range(10):
     for Y, y, x1, x2, x3, x4, x5, x6, x7 in loader:
         optimizer.zero_grad()
         # Shapes:  Y = (1, 5, 22); x1 = (1, 3 ,22) (bei 3 Kennzahlen pro Klasse); x2 = ...
+        #print("Y: " + str(Y))
+        #print("x1: " + str(x1) + "/ x2:" + str(x2) + "/ x3:" + str(x3) + "/ x4:" + str(x4) + "/ x5:" + str(x5) + "/ x6:" + str(x6) + "/ x7:" + str(x7))
+        #print("y: " + str(y))
         outputs = net(Y.float(), x1.float(), x2.float(), x3.float(), x4.float(), x5.float(), x6.float(), x7.float())
-        loss = criterion(torch.squeeze(outputs), y.float())
+        output2 = torch.squeeze(outputs.float())
+        y2 = torch.squeeze(y.float())
+        print("Netzwerkoutput: " + str(output2) + " / Label: " + str(y2))
+        loss = criterion(output2, y2)
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-        print(loss.item())
+        #print(loss.item())
 
     print('Epoch loss: ' + str(running_loss / len(loader)))
 
