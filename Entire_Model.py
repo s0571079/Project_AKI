@@ -122,7 +122,7 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 processedEpochs = 0
 
-for epoch in range(10):
+for epoch in range(5):
 
     running_loss = 0
     countProcessedRecords = 0
@@ -142,14 +142,10 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-<<<<<<< HEAD
-=======
-        print(loss.item())
->>>>>>> 2f9df66fdba9b481ac03b6c50874ce824f8db016
-        loss_plot_values.append(running_loss / len(loader))
         countProcessedRecords = countProcessedRecords+1
         print("Records processed:" + str(countProcessedRecords))
 
+    loss_plot_values.append(running_loss / len(loader))
     print('Epoch loss: ' + str(running_loss / len(loader)))
     processedEpochs = processedEpochs + 1
     print("Epochs processed:" + str(processedEpochs))
