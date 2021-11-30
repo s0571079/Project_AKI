@@ -5,6 +5,7 @@ import random
 import pickle
 import CustomMultiInput_LSTM as lstm
 import numpy
+import matplotlib.pyplot as plt
 from os import listdir
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -106,6 +107,7 @@ class StockDataSet(Dataset):
 T = 22
 numberOfNodesPerLayer = 64
 batch_size = 1
+loss_plot_values = []
 
 dataset = StockDataSet()
 loader = DataLoader(dataset=dataset, batch_size=batch_size)
@@ -135,8 +137,13 @@ for epoch in range(10):
         optimizer.step()
         running_loss += loss.item()
         #print(loss.item())
+        loss_plot_values.append(running_loss / len(loader))
 
     print('Epoch loss: ' + str(running_loss / len(loader)))
 
 
-# TODO: Plot results
+#Plot results
+plt.plot(loss_plot_values)
+plt.ylabel('loss')
+plt.xlabel('')
+plt.show()
