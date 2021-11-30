@@ -37,7 +37,7 @@ pickle_files_folder_path = "missing"
 
 # loop settings
 
-numberOfFilesToRead = 10
+numberOfFilesToRead = 1000
 
 chunksPerFileToRead = 20
 chunkSize = 23 # size of rows in one chunk
@@ -418,4 +418,4 @@ for dataFramesList in dataFramesPickleSize:
             i = i + 1
             print(str(dataFrames.iloc[1]['Ticker']))
             dataFrames.to_pickle("./Pickle/" + dataFrames.iloc[1]['Ticker'] + "_" + str(i) + ".pkl")
-print("PICKLE FILE CREATION finished..." + str(i) + " Files persistiert.")
+print("PICKLE FILE CREATION finished... ~" + str(i*numberOfFilesToRead) + " Files persistiert.")
