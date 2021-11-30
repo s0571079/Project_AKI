@@ -12,21 +12,14 @@ READING DATA
 
 VALIDATION AND PREPROCESSING
 - Delete not needed columns
-- Filtering some conditions (filter out null values, filter out chunks with no variation)
-- Validation
 - Normalisation
 
 ENRICH DATA WITH TA-LIB PARAMETERS
-- (started) Calculate different parameters from different TA-LIB classes (https://github.com/mrjbq7/ta-lib)
-- (missing) Add the results to each chunk row
+- Calculate different parameters from different TA-LIB classes (https://github.com/mrjbq7/ta-lib)
+- Add the results to each row
 
 PERSIST VALUES
-- (missing) Save the preprocessed data as pickle files
-
-
-???
-- Volume deleted
-
+- Save the preprocessed data as pickle files
 """
 
 import os
@@ -96,8 +89,33 @@ for root, dirs, files in os.walk(data_folder_path):
 print("READING DATA finished ..." + str(numberOfFilesReadingFinished) + " files are read successfully")
 
 # Filter out null values and ignore these chunks
-# Filter out values with no variation
 # Perform normalization
+normalized_data = []
+allFilesMergedChunks = []
+for allChunksSingleFile in allFilesAllChunks:
+    allFilesMergedChunks.append(pandas.concat(allChunksSingleFile))
+    for dataFrame in allFilesMergedChunks:
+        min_max_scaler = preprocessing.MinMaxScaler()
+        x = dataFrame.dropna().values[:, 1:-1]
+        x_scaled = min_max_scaler.fit_transform(x)
+        table = pandas.DataFrame(x_scaled)
+    normalized_data.append(table)
+
+allFilesMergedChunks_normalized = []
+for df in allFilesMergedChunks:
+    allFilesMergedChunks_normalized.append(df.copy())
+
+for i in range(len(allFilesMergedChunks)):
+    allFilesMergedChunks_normalized[i]['Open'] = normalized_data[i][0]
+    allFilesMergedChunks_normalized[i]['High'] = normalized_data[i][1]
+    allFilesMergedChunks_normalized[i]['Low'] = normalized_data[i][2]
+    allFilesMergedChunks_normalized[i]['Close'] = normalized_data[i][2]
+    allFilesMergedChunks_normalized[i]['Volume'] = normalized_data[i][2]
+    allFilesMergedChunks_normalized[i].reset_index(drop=True, inplace=True)
+
+
+
+"""
 allFilesAllChunks_validated1 = []
 for allChunksSingleFile in allFilesAllChunks:
     allChunksSingleFileValidated = []
@@ -122,7 +140,7 @@ for allChunksSingleFile in allFilesAllChunks:
         else:
             print("NULL-Validation or UNIQUE-Validation not passed! Values: " + str(len(chunkDf)) + " / " + str(countDiffValuesOpen) + " / " + str(countDiffValuesClose))
     allFilesAllChunks_validated1.append(list(allChunksSingleFileValidated))
-
+"""
 print("VALIDATION AND PREPROCESSING finished ...")
 
 #init lists
@@ -143,17 +161,13 @@ tr = []
 avgprice = []
 typprice = []
 wclprice = []
-#htdcperiod = []
-#htdcphase = []
 whitesoldiers = []
 starsinsouth = []
 twocrows = []
 linearreg = []
 stddev = []
 tsf = []
-
-talib_values = numpy.empty([23, 200])
-
+"""
 #Merge Chunks for Ta-Lib Calculations
 ChunksMergedList = [allFilesAllChunks[0][0]]
 i = 0
@@ -167,9 +181,9 @@ while i < len(allFilesAllChunks):
             ChunksMergedList[i] = ChunksMergedList[i].append(allFilesAllChunks[i][j], ignore_index=True)
         j = j + 1
     i = i + 1
-
+"""
 # Calculate different parameters from different TA-LIB classes
-for chunkDf in ChunksMergedList:
+for chunkDf in allFilesMergedChunks:
         # CLASS_1 : 'Overlap Studies' - Bollinger Bands (with Simple Moving Average)
         upper, middle, lower = TaLib_Calculations.getBBands(chunkDf, chunkSize)
         upper_df = pandas.DataFrame(data = upper)
@@ -229,6 +243,22 @@ columns = numpy.array(['upperBB','middleBB','lowerBB','midpoint','wma','mom','mf
 
 TaLib_list = [upperBB, middleBB, lowerBB, midpoint, wma, mom, mfi, bop, adline, adosc, obv, atr, natr, tr, avgprice,
                           typprice, wclprice, whitesoldiers, starsinsouth, twocrows, linearreg, stddev, tsf]
+
+"""
+#merge all TaLib Data for all Files
+Talib_merged = []
+for list in TaLib_list:
+    Talib_merged.append(pandas.concat(list))
+
+#normalize all TaLib Data for all Files
+Talib_merged_normalized = []
+for dataFrame in Talib_merged:
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x = dataFrame.values
+    x_scaled = min_max_scaler.fit_transform(x)
+    table = pandas.DataFrame(x_scaled)
+    Talib_merged_normalized.append(table)
+"""
 
 j = 0
 for method in TaLib_list:
@@ -311,7 +341,7 @@ for method in TaLib_list:
             print('Something is wrong...')
     j = j + 1
 
-
+"""
 #Merge normalized Chunks and Combine with Ta-Lib Data
 ChunksMergedList_validated = [allFilesAllChunks_validated1[0][0]]
 i = 0
@@ -325,20 +355,34 @@ while i < len(allFilesAllChunks_validated1):
             ChunksMergedList_validated[i] = ChunksMergedList_validated[i].append(allFilesAllChunks_validated1[i][j], ignore_index=True)
         j = j + 1
     i = i + 1
-
-columns = numpy.array(['Open','High','Low','Close','Volume','Date','Ticker',
+"""
+columns = numpy.array(['Date','Open','High','Low','Close','Volume','Ticker',
                        'upperBB','middleBB','lowerBB','midpoint','wma','mom','mfi','bop','adline',
                        'adosc','obv','atr','natr','tr','avgprice','typprice','wclprice',
                        'whitesoldiers','starsinsouth','twocrows','linearreg','stddev','tsf'])
+"""
+mergedBaseData = pandas.concat(ChunksMergedList_validated)
+concat_data = [mergedBaseData]
+for df in Talib_merged_normalized:
+    concat_data.append(df)
+allFilesAllData = pandas.concat(concat_data, axis=1, join="inner")
+allFilesAllData.columns = columns
+allFilesAllDataNoNaNs = allFilesAllData.dropna()
 
-
-
-
-
+dataFramesPickleSize = []
+df_split = numpy.array_split(allFilesAllDataNoNaNs, numberOfFilesToRead)
+for dataFrames in df_split:
+    temp = numpy.array_split(dataFrames, (chunksPerFileToRead-2))
+    for df in temp:
+        if len(df.index) > chunkSize:
+            df.drop(df.tail(1).index, inplace=True)
+    dataFramesPickleSize.append(temp)
+print(dataFramesPickleSize)
+"""
 i = 0
 allFilesAllData = []
-while i < len(ChunksMergedList_validated):
-    allFilesAllData.append(pandas.concat([ChunksMergedList_validated[i], upperBB[i], middleBB[i], lowerBB[i], midpoint[i],
+while i < len(allFilesMergedChunks_normalized):
+    allFilesAllData.append(pandas.concat([allFilesMergedChunks_normalized[i], upperBB[i], middleBB[i], lowerBB[i], midpoint[i],
                                           wma[i], mom[i], mfi[i], bop[i], adline[i], adosc[i], obv[i], atr[i], natr[i], tr[i], avgprice[i],
                                           typprice[i], wclprice[i], whitesoldiers[i], starsinsouth[i], twocrows[i], linearreg[i], stddev[i], tsf[i]],
                                          axis=1))
