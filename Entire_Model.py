@@ -82,9 +82,7 @@ class StockDataSet(Dataset):
         Y = item[["Open", "High", "Low", "Close", "Volume"]].to_numpy()
         y = item.loc[item.index[-1], "Close"]
 
-        print(f.name)
         Y = Y[:-1]
-
         # Overlap Studies
         x_1 = item[["upperBB", "middleBB", "lowerBB", "midpoint", "wma"]].to_numpy()
         # Momentum Indicators
@@ -103,6 +101,11 @@ class StockDataSet(Dataset):
         return Y, y, x_1, x_2, x_3, x_4, x_5, x_6, x_7
 
 
+
+#with open('./Pickle/' + 'ABNJ-200905_17.pkl', 'rb') as f:
+#        item = pickle.load(f)
+#        print(item)
+
 # The time window is 22 days
 T = 22
 numberOfNodesPerLayer = 64
@@ -117,9 +120,12 @@ net = Net(T, numberOfNodesPerLayer)
 criterion = nn.L1Loss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
+processedEpochs = 0
+
 for epoch in range(10):
 
     running_loss = 0
+    countProcessedRecords = 0
 
     # T = 22
     for Y, y, x1, x2, x3, x4, x5, x6, x7 in loader:
@@ -136,11 +142,13 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-        #print(loss.item())
         loss_plot_values.append(running_loss / len(loader))
+        countProcessedRecords = countProcessedRecords+1
+        print("Records processed:" + str(countProcessedRecords))
 
     print('Epoch loss: ' + str(running_loss / len(loader)))
-
+    processedEpochs = processedEpochs + 1
+    print("Epochs processed:" + str(processedEpochs))
 
 #Plot results
 plt.plot(loss_plot_values)

@@ -43,7 +43,7 @@ data_folder_path = "c:/data/USWS_Subset"
 pickle_files_folder_path = "missing"
 
 # loop settings
-numberOfFilesToRead = 50
+numberOfFilesToRead = 1000
 chunksPerFileToRead = 20
 chunkSize = 23 # size of rows in one chunk
 
