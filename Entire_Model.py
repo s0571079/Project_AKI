@@ -137,11 +137,15 @@ for epoch in range(10):
         outputs = net(Y.float(), x1.float(), x2.float(), x3.float(), x4.float(), x5.float(), x6.float(), x7.float())
         output2 = torch.squeeze(outputs.float())
         y2 = torch.squeeze(y.float())
-        print("Netzwerkoutput: " + str(output2) + " / Label: " + str(y2))
+        #print("Netzwerkoutput: " + str(output2) + " / Label: " + str(y2))
         loss = criterion(output2, y2)
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
+<<<<<<< HEAD
+=======
+        print(loss.item())
+>>>>>>> 2f9df66fdba9b481ac03b6c50874ce824f8db016
         loss_plot_values.append(running_loss / len(loader))
         countProcessedRecords = countProcessedRecords+1
         print("Records processed:" + str(countProcessedRecords))
