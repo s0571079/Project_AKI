@@ -37,7 +37,7 @@ pickle_files_folder_path = "missing"
 
 # loop settings
 
-numberOfFilesToRead = 10
+numberOfFilesToRead = 600
 
 chunksPerFileToRead = 20
 chunkSize = 23 # size of rows in one chunk
@@ -94,6 +94,7 @@ print("READING DATA finished ..." + str(numberOfFilesReadingFinished) + " files 
 # Perform normalization
 normalized_data = []
 allFilesMergedChunks = []
+processedRecordsStep2 = 0
 for allChunksSingleFile in allFilesAllChunks:
     allFilesMergedChunks.append(pandas.concat(allChunksSingleFile))
     for dataFrame in allFilesMergedChunks:
@@ -102,6 +103,8 @@ for allChunksSingleFile in allFilesAllChunks:
         x_scaled = min_max_scaler.fit_transform(x)
         table = pandas.DataFrame(x_scaled)
     normalized_data.append(table)
+    processedRecordsStep2 = processedRecordsStep2 + 1
+    print("Step2: " + str(processedRecordsStep2))
 
 allFilesMergedChunks_normalized = []
 for df in allFilesMergedChunks:
