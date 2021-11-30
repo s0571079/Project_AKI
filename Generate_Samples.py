@@ -36,7 +36,7 @@ data_folder_path = "c:/data/USWS_Subset"
 pickle_files_folder_path = "missing"
 
 # loop settings
-numberOfFilesToRead = 50
+numberOfFilesToRead = 10
 chunksPerFileToRead = 20
 chunkSize = 23 # size of rows in one chunk
 
@@ -109,8 +109,8 @@ for i in range(len(allFilesMergedChunks)):
     allFilesMergedChunks_normalized[i]['Open'] = normalized_data[i][0]
     allFilesMergedChunks_normalized[i]['High'] = normalized_data[i][1]
     allFilesMergedChunks_normalized[i]['Low'] = normalized_data[i][2]
-    allFilesMergedChunks_normalized[i]['Close'] = normalized_data[i][2]
-    allFilesMergedChunks_normalized[i]['Volume'] = normalized_data[i][2]
+    allFilesMergedChunks_normalized[i]['Close'] = normalized_data[i][3]
+    allFilesMergedChunks_normalized[i]['Volume'] = normalized_data[i][4]
     allFilesMergedChunks_normalized[i].reset_index(drop=True, inplace=True)
 
 
