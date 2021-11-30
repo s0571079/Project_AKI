@@ -108,7 +108,7 @@ class StockDataSet(Dataset):
 
 # The time window is 22 days
 T = 22
-numberOfNodesPerLayer = 64
+numberOfNodesPerLayer = 32
 batch_size = 1
 loss_plot_values = []
 
