@@ -45,9 +45,9 @@ class Net(nn.Module):
         self.relu_layer = nn.ReLU()
         self.lin_layer = nn.Linear(hidden_size, 1)
 
-    def forward(self, Y):
+    def forward(self, Y, x1, x2, x3, x4, x5, x6, x7):
         # Executed when input is passed into the neural network
-        output, hidden = self.MI_LSTM_layer(Y)
+        output, hidden = self.MI_LSTM_layer(Y, x1, x2, x3, x4, x5, x6, x7)
         # output shape = 1, 64 // hidden = 1, 22, 64
 
         # Note that the hidden sequence is passed here
@@ -98,7 +98,7 @@ class StockDataSet(Dataset):
         # Statistic Functions
         x_7 = item[["linearreg", "stddev", "tsf"]].to_numpy()
 
-        return Y, y
+        return Y, y, x_1, x_2, x_3, x_4, x_5, x_6, x_7
 
 
 
@@ -128,11 +128,11 @@ for epoch in range(10):
     countProcessedRecords = 0
 
     # T = 22
-    for Y, y in loader:
+    for Y, y, x1, x2, x3, x4, x5, x6, x7 in loader:
         optimizer.zero_grad()
         # Shapes:  Y = (1, 5, 22); x1 = (1, 3 ,22) (bei 3 Kennzahlen pro Klasse); x2 = ...
 
-        outputs = net(Y.float())
+        outputs = net(Y.float(), x1.float(), x2.float(), x3.float(), x4.float(), x5.float(), x6.float(), x7.float())
         output2 = torch.squeeze(outputs.float())
         y2 = torch.squeeze(y.float())
         #print("Netzwerkoutput: " + str(output2) + " / Label: " + str(y2))
